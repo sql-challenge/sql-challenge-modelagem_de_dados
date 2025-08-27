@@ -1,0 +1,63 @@
+@startuml
+!theme plain
+' Usando o tema "plain" para um fundo branco padrão e estilo minimalista
+
+' Configurações e estilo estético
+hide empty members
+
+' Fundo branco
+skinparam backgroundColor white
+
+' Estilo para Coleções (Classes)
+skinparam class {
+  ArrowColor #607d8b
+  ArrowFontSize 12
+  BorderColor #b0bec5
+  BackgroundColor #eceff1
+  FontColor #37474f
+  shadowing false
+}
+
+' Estilo para Notas
+skinparam note {
+  BackgroundColor #fffde7
+  FontColor #424242
+  BorderColor #cfd8dc
+  shadowing false
+}
+
+title <size:18>Modelagem do Banco de Dados Firebase (Cloud Firestore)</size>
+
+' Coleção users
+class users {
+  {field} username: string
+  {field} email: string
+  {field} password: string
+  {field} imagePerfil: string
+  {field} createdAt: timestamp
+  {field} lastLogin: timestamp
+  {field} totalScore: number
+  {field} xp: number
+  {field} completedChallenges: array<string>
+  {field} badges: array<string>
+}
+
+' Coleção ranking (Opcional)
+class subcoleção_ranking {
+  {field} username: string
+  {field} imagePerfil: string
+  {field} totalScore: number
+}
+
+' Subcoleção friends
+class subcoleção_friends {
+  {field} status: string ("pending", "accepted", "blocked", "excluse")
+  {field} totalScore: number
+  {field} xp: number
+}
+
+' Relacionamentos
+users "1" -- "1" subcoleção_ranking : ""
+users "1" -- "N" subcoleção_friends : ""
+
+@enduml
