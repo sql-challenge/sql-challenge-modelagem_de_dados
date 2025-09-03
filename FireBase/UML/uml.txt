@@ -39,7 +39,7 @@ class users as "users (Coleção)" {
   {field} imagePerfil: string
   {field} createdAt: timestamp
   {field} lastLogin: timestamp
-  {field} totalScore: number
+  {field} rankingPosition: number
   {field} xp: number
 }
 
@@ -59,7 +59,7 @@ class ranking as "ranking (Coleção)" {
   {field} username: string
   {field} nick: string
   {field} imagePerfil: string
-  {field} totalScore: number
+  {field} rankingPosition: number
 }
 
 ' Subcoleção friends
@@ -69,7 +69,7 @@ class friends as "friends (Subcoleção)" {
   {field} status: string ("pending", "accepted", "blocked")
   {field} username: string
   {field} nick: string
-  {field} totalScore: number
+  {field} rankingPosition: number
   {field} xp: number
 }
 
