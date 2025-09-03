@@ -26,38 +26,56 @@ skinparam note {
   shadowing false
 }
 
-title <size:18>Modelagem do Banco de Dados Firebase (Cloud Firestore)</size>
+title <size:18>Modelagem Lógica (Estilo Híbrido) - Cloud Firestore</size>
 
 ' Coleção users
-class users {
+class users as "users (Coleção)" {
+  **userId: string (PK)**
+  --
   {field} username: string
+  {field} nick: string
   {field} email: string
-  {field} password: string
+  ' {field} password: string ' (Gerenciado pelo Firebase Auth)
   {field} imagePerfil: string
   {field} createdAt: timestamp
   {field} lastLogin: timestamp
   {field} totalScore: number
   {field} xp: number
-  {field} completedChallenges: array<string>
-  {field} badges: array<string>
 }
 
-' Coleção ranking (Opcional)
-class subcoleção_ranking {
+' Subcoleção challenge_progress
+class challenge_progress as "challenge_progress (Subcoleção)" {
+  **challengeId: string (PK)**
+  --
+  {field} nameChallenge: string
+  {field} capFinish: int
+  {field} xpObtido: int 
+}
+
+' Coleção ranking (Top-Level)
+class ranking as "ranking (Coleção)" {
+  **userId: string (PK, FK)**
+  --
   {field} username: string
+  {field} nick: string
   {field} imagePerfil: string
   {field} totalScore: number
 }
 
 ' Subcoleção friends
-class subcoleção_friends {
-  {field} status: string ("pending", "accepted", "blocked", "excluse")
+class friends as "friends (Subcoleção)" {
+  **friendId: string (PK, FK)**
+  --
+  {field} status: string ("pending", "accepted", "blocked")
+  {field} username: string
+  {field} nick: string
   {field} totalScore: number
   {field} xp: number
 }
 
-' Relacionamentos
-users "1" -- "1" subcoleção_ranking : ""
-users "1" -- "N" subcoleção_friends : ""
+' Relacionamentos Lógicos (com cores nas setas)
+users "1" -[#black]-> "1" ranking : ""
+users "1" -[#black]-> "N" friends : ""
+users "1" -[#black]-> "N" challenge_progress : ""
 
 @enduml
