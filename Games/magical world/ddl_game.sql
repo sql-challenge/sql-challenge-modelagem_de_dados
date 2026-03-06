@@ -1,8 +1,33 @@
+-- ==========================================
+-- 1. DESTRUIR TUDO (RESET DO AMBIENTE)
+-- ==========================================
+DROP TABLE IF EXISTS vw_Pistas_Decifradas CASCADE;
+DROP TABLE IF EXISTS Grimorio_Primordial CASCADE;
+DROP TABLE IF EXISTS Posse_Artefatos CASCADE;
+DROP TABLE IF EXISTS Ordens_Emitidas CASCADE;
+DROP TABLE IF EXISTS Registros_Secretos CASCADE;
+DROP TABLE IF EXISTS Aliados_Politicos CASCADE;
+DROP TABLE IF EXISTS Ordens_Torre_Magica CASCADE;
+DROP TABLE IF EXISTS Torres_Magicas CASCADE;
+DROP TABLE IF EXISTS Permissoes_Mineracao CASCADE;
+DROP TABLE IF EXISTS Minas CASCADE;
+DROP TABLE IF EXISTS Transacoes_Comerciais CASCADE;
+DROP TABLE IF EXISTS Ataques CASCADE;
+DROP TABLE IF EXISTS Cidade CASCADE;
+DROP TABLE IF EXISTS AcademiaMagica CASCADE;
+DROP TABLE IF EXISTS Artefato CASCADE;
+DROP TABLE IF EXISTS Pessoa CASCADE;
+DROP TABLE IF EXISTS Feudo CASCADE;
+
+-- ==========================================
+-- 2. RECRIAR TODAS AS TABELAS
+-- ==========================================
+
 -- Tabela Feudo
 CREATE TABLE Feudo (
     id BIGINT PRIMARY KEY,
     familiaFeudal VARCHAR(255) NOT NULL,
-    geografia CHAR(1)
+    geografia VARCHAR(255)
 );
 
 -- Tabela Pessoa
@@ -19,7 +44,7 @@ CREATE TABLE Pessoa (
 CREATE TABLE Artefato (
     id BIGINT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
-    categoria CHAR(1),
+    categoria VARCHAR(255),
     id_proprietário BIGINT REFERENCES Pessoa(id)
 );
 

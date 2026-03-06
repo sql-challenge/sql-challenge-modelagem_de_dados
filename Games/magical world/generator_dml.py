@@ -1,18 +1,20 @@
 import random
 from datetime import date, timedelta
+import requests
 
-# --- Dados Verdadeiros (Pistas) ---
+
+# --- Dados Vpip  erdadeiros (Pistas) ---
 
 # IDs base para evitar conflito com distratores (Distratores começarão em 300 para Feudo/Pessoa)
 FEUDO_PISTAS = [
-    (1, 'Centauros de Val’Nareth', 'N'),
-    (2, 'Bruxos de Cintra', 'L'),
-    (3, 'Elfos das Florestas do Oeste', 'O'),
-    (4, 'Sereias do Marés de Coral', 'S'),
-    (5, 'Dragões das Cordilheiras', 'N'),
-    (6, 'Vampiros das Montanhas', 'S'),
-    (7, 'Fadas e Elfos do Oeste', 'O'),
-    (8, 'Realeza de Capital', 'C')
+    (1, 'Centauros de Val’Nareth', 'Norte'),
+    (2, 'Bruxos de Cintra', 'Leste'),
+    (3, 'Elfos das Florestas do Oeste', 'Oeste'),
+    (4, 'Sereias do Marés de Coral', 'Sul'),
+    (5, 'Dragões das Cordilheiras', 'Norte'),
+    (6, 'Vampiros das Montanhas', 'Sul'),
+    (7, 'Fadas e Elfos do Oeste', 'Oeste'),
+    (8, 'Realeza de Capital', 'Centro')
 ]
 PESSOA_PISTAS = [
     (100, 'O', 'Sem Nome', 'Centauro', '0100-01-01', None), # Vilão principal
@@ -25,11 +27,11 @@ PESSOA_PISTAS = [
 ]
 # Removida a coluna 'quantidade' (4º elemento) para Artefato
 ARTEFATO_PISTAS = [
-    (1000, 'Cajado do Coração de Fogo', 'L', 101), # Em posse do Líder dos Justiceiros
-    (1001, 'Arca do Grimório Primordial', 'L', None),
-    (1002, 'Pedra Filosofal', 'L', 102),
-    (1003, 'Poção de Cura', 'C', 105),
-    (1004, 'Mapa Antigo', 'C', 104)
+    (1000, 'Cajado do Coração de Fogo', 'Leste', 101), # Em posse do Líder dos Justiceiros
+    (1001, 'Arca do Grimório Primordial', 'Leste', None),
+    (1002, 'Pedra Filosofal', 'Leste', 102),
+    (1003, 'Poção de Cura', 'Centro', 105),
+    (1004, 'Mapa Antigo', 'Centro', 104)
 ]
 ACADEMIA_PISTAS = [
     (10, 'Academia Central de Magia', 500, 105)
@@ -99,6 +101,62 @@ def get_random_date(start_year, end_year):
     return random_date.strftime('%Y-%m-%d')
 
 # Agora usa uma lista limitada de nomes de famílias/territórios coerentes
+
+# --- integração com APIs externas para nomes ---
+def fetch_person_names(count):
+    """Obtém nomes e sobrenomes brasileiros do IBGE quando possível.
+    Se falhar ou não houver sobrenomes, tenta randomuser.me como fallback.
+    Retorna lista de tuplas (nome, sobrenome)."""
+    results = []
+    # primeiro, tenta IBGE para primeiros nomes
+    if requests:
+        try:
+            # ranking de nomes mais comuns no Brasil
+            resp = requests.get('https://servicodados.ibge.gov.br/api/v2/censos/nomes/ranking')
+            data = resp.json()
+            # data é lista de dicts com 'nome'
+            nomes = [item['nome'] for item in data]
+            random.shuffle(nomes)
+            # fideliza primeiros nomes
+            for i in range(min(count, len(nomes))):
+                results.append((nomes[i], None))
+        except Exception:
+            results = []
+    # se não conseguiu sobrenomes, ou não atingiu contagem, usa randomuser para completar
+    if len(results) < count and requests:
+        try:
+            resp = requests.get(f'https://randomuser.me/api/?results={count - len(results)}&nat=br')
+            data = resp.json()
+            for r in data.get('results', []):
+                name = r['name']['first']
+                surname = r['name']['last']
+                if len(results) < count:
+                    results.append((name, surname))
+        except Exception:
+            pass
+    # se ainda faltam sobrenomes, preenche com nomes repetidos
+    for i, (n, s) in enumerate(results):
+        if s is None:
+            results[i] = (n, "")
+    return results[:count]
+
+
+def fetch_object_names(count):
+    """Gera nomes de objetos usando uma API de palavras aleatórias.
+    Como fallback, retorna lista vazia."""
+    results = []
+    if not requests:
+        return results
+    try:
+        for _ in range(count):
+            resp = requests.get('https://random-word-api.herokuapp.com/word')
+            word = resp.json()[0]
+            results.append(word.capitalize())
+    except Exception:
+        pass
+    return results
+
+
 def generate_feudos(count):
     feudos = []
     # Nomes de famílias/territórios coerentes com a história (ex: Raças Dominantes/Clãs)
@@ -106,7 +164,7 @@ def generate_feudos(count):
         "Clã do Vento", "Casa da Pedra", "Linha do Sol", "Povo das Sombras",
         "Reino do Gelo", "Guardiões da Floresta", "Nômades do Deserto", "Ordem da Magia Branca"
     ]
-    geografias = ['N', 'S', 'L', 'O', 'C']
+    geografias = ['Norte', 'Sul', 'Leste', 'Oeste', 'Centro']
     start_id = 300 # Começa após os IDs de pista (1-8)
 
     for i in range(start_id, start_id + count):
@@ -136,6 +194,9 @@ def generate_pessoas(count):
 def generate_artefatos(count, pessoa_ids):
     artefatos = []
     nomes = ["Amuleto", "Cajado", "Espada", "Livro", "Poção", "Anel", "Escudo"]
+    nomes.extend(fetch_object_names(7))
+    if not nomes or len(nomes) < 7:
+        nomes = ["Amuleto", "Cajado", "Espada", "Livro", "Poção", "Anel", "Escudo"]
     categorias = ['L', 'C']
     start_id = 2000 # Começa após os IDs de pista (1000-1004)
 
@@ -252,7 +313,7 @@ def generate_ordens_torre(count, torre_ids, feudo_ids):
         torre = random.choice(torre_ids)
         data = get_random_date(500, 540)
         alvo = random.choice(feudo_ids)
-        descricao = random.choice(descricoes) + " " + str(i)
+        descricao = random.choice(descricoes)
         ordens.append((i, torre, data, alvo, descricao))
     return ordens
 
@@ -264,7 +325,7 @@ def generate_ordens_emitidas(count, pessoa_ids):
 
     for i in range(start_id, start_id + count):
         emissor = random.choice(pessoa_ids)
-        conteudo = random.choice(descricoes) + " " + str(i)
+        conteudo = random.choice(descricoes)
         ordens.append((i, emissor, conteudo))
     return ordens
 
@@ -402,13 +463,13 @@ def generate_all_inserts(target_count=200):
 
 if __name__ == "__main__":
 
-    TARGET_COUNT = 1000
+    TARGET_COUNT = 3000
     
     print(f"Gerando script SQL com {TARGET_COUNT} registros por tabela...")
     
     sql_content = generate_all_inserts(TARGET_COUNT)
     
-    output_file = "generated_data_v3.sql"
+    output_file = "dml_gama.sql"
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(sql_content)
         
