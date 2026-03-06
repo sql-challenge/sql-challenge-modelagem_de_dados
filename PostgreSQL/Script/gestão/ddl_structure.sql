@@ -1,8 +1,27 @@
+-- Drop do banco de dados se existir (para limpar antes de recriar)
+DROP DATABASE IF EXISTS db_gestao;
+
 -- Cria o banco de dados principal
 CREATE DATABASE db_gestao;
 
 -- Conecte-se a este banco de dados antes de executar as próximas etapas
 -- psql -U admin -d db_gestao -h localhost -p 5432 (terminal)
+
+-- Drop das tabelas se existirem (CASCADE remove triggers dependentes)
+DROP TABLE IF EXISTS capitulo_visao CASCADE;
+DROP TABLE IF EXISTS Desafio CASCADE;
+DROP TABLE IF EXISTS Capitulo CASCADE;
+DROP TABLE IF EXISTS Objetivo CASCADE;
+DROP TABLE IF EXISTS Consulta CASCADE;
+DROP TABLE IF EXISTS Visao CASCADE;
+DROP TABLE IF EXISTS Log CASCADE;
+
+-- Drop da função de auditoria se existir
+DROP FUNCTION IF EXISTS log_changes() CASCADE;
+
+-- Concede permissão de SELECT para todas as tabelas no esquema 'public'
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO user_gestao_challenge;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO user_gestao_challenge;
 
 -- Criação das tabelas de conteúdo
 CREATE TABLE Visao (
