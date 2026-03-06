@@ -52,6 +52,17 @@ CREATE TABLE capitulo_visao (
     FOREIGN KEY (id_visao) REFERENCES Visao(id)
 );
 
+--- Tabela para as dicas associadas aos desafios
+CREATE TABLE dica (
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id_desafio BIGINT NOT NULL,
+    ordem INT NOT NULL,
+    conteudo VARCHAR NOT NULL,
+    penalidade_xp INT DEFAULT 0,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_desafio) REFERENCES Desafio(id) ON DELETE CASCADE
+);
+
 -- Tabela para o sistema de auditoria (Log)
 CREATE TABLE Log (
     id SERIAL PRIMARY KEY,
@@ -90,3 +101,4 @@ CREATE TRIGGER consulta_audit AFTER INSERT OR UPDATE OR DELETE ON Consulta FOR E
 CREATE TRIGGER objetivo_audit AFTER INSERT OR UPDATE OR DELETE ON Objetivo FOR EACH ROW EXECUTE FUNCTION log_changes();
 CREATE TRIGGER capitulo_audit AFTER INSERT OR UPDATE OR DELETE ON Capitulo FOR EACH ROW EXECUTE FUNCTION log_changes();
 CREATE TRIGGER desafio_audit AFTER INSERT OR UPDATE OR DELETE ON Desafio FOR EACH ROW EXECUTE FUNCTION log_changes();
+CREATE TRIGGER dica_audit AFTER INSERT OR UPDATE OR DELETE ON dica FOR EACH ROW EXECUTE FUNCTION log_changes();
