@@ -36,7 +36,7 @@ INSERT INTO Visao_Tabela (id, id_visao, nome, descricao) VALUES
 (2, 1, 'especies_governantes', 'Espécies dominantes por território'),
 (3, 2, 'ataques_raw', 'Registros de ataques bruxos');
 
--- 7. VISÃO COLUNA (Visao_Coluna) - Exemplo de colunas para regiõoes_reinos e ataques_raw (capítulo 1 e 2)
+-- 7. VISÃO COLUNA (Visao_Coluna) - Exemplo de colunas para regioes_reinos e ataques_raw (capítulo 1 e 2)
 INSERT INTO Visao_Coluna (id, id_tabela, nome, tipo, nulavel, chave_primaria, descricao) VALUES
 -- regioes_reinos (id_tabela=1)
 (1, 1, 'nome_reino', 'VARCHAR', FALSE, FALSE, 'Nome do reino'),
@@ -58,3 +58,14 @@ INSERT INTO Consulta (id, id_capitulo, colunas, resultado) VALUES
 (1, 1, ARRAY['nome_reino','geografia'], '[{"nome_reino": "Alven", "geografia": "Planícies"}]'),
 -- Capítulo 2: ataques dos Justiceiros
 (2, 2, ARRAY['data_ocorrido','id_territorio'], '[{"data_ocorrido": "2026-01-10", "id_territorio": 1}]');
+
+-- (Optional) If you use explicit IDs, reset the sequences to match the max manual ID for smooth future inserts
+SELECT setval('desafio_id_seq', COALESCE((SELECT MAX(id) FROM Desafio), 1), true);
+SELECT setval('capitulo_id_seq', COALESCE((SELECT MAX(id) FROM Capitulo), 1), true);
+SELECT setval('objetivo_id_seq', COALESCE((SELECT MAX(id) FROM Objetivo), 1), true);
+SELECT setval('dica_id_seq', COALESCE((SELECT MAX(id) FROM Dica), 1), true);
+SELECT setval('visao_id_seq', COALESCE((SELECT MAX(id) FROM Visao), 1), true);
+SELECT setval('visao_tabela_id_seq', COALESCE((SELECT MAX(id) FROM Visao_Tabela), 1), true);
+SELECT setval('visao_coluna_id_seq', COALESCE((SELECT MAX(id) FROM Visao_Coluna), 1), true);
+SELECT setval('visao_dadoexemplo_id_seq', COALESCE((SELECT MAX(id) FROM Visao_DadoExemplo), 1), true);
+SELECT setval('consulta_id_seq', COALESCE((SELECT MAX(id) FROM Consulta), 1), true);
