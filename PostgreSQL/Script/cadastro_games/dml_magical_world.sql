@@ -114,45 +114,45 @@ INSERT INTO Visao (id, id_capitulo, comando) VALUES
 -- ============================================================
 
 -- Capítulo 1: MAPEANDO O MUNDO MÁGICO (6 objetivos, foco: SELECT e WHERE)
-INSERT INTO Objetivo (id, id_capitulo, descricao, ordem) VALUES
-(1, 1, 'Identificar todas as regiões e reinos do mundo mágico listados no banco de dados.', 1),
-(2, 1, 'Listar as espécies que governam cada território.', 2),
-(3, 1, 'Encontrar o nome e sobrenome dos Senhores das Terras de cada território.', 3),
-(4, 1, 'Verificar quais territórios possuem ligação com artefatos da categoria Lendário (''L'').', 4),
-(5, 1, 'Explorar as regiões com geografia Norte (''N'') e Sul (''S'') usando WHERE com OR.', 5),
-(6, 1, 'Identificar a pessoa mais antiga ainda viva, obtendo seu nome e idade calculada.', 6);
+INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
+(1, 1, 'Identificar todas as regiões e reinos do mundo mágico listados no banco de dados.', 1, 0),
+(2, 1, 'Listar as espécies que governam cada território.', 2, 0),
+(3, 1, 'Encontrar o nome e sobrenome dos Senhores das Terras de cada território.', 3, 0),
+(4, 1, 'Verificar quais territórios possuem ligação com artefatos da categoria Lendário (''L'').', 4, 1),
+(5, 1, 'Explorar as regiões com geografia Norte (''N'') e Sul (''S'') usando WHERE com OR.', 5, 1),
+(6, 1, 'Identificar a pessoa mais antiga ainda viva, obtendo seu nome e idade calculada.', 6, 2);
 
 -- Capítulo 2: PRIMEIRAS PISTAS DOS JUSTICEIROS (5 objetivos, foco: GROUP BY e Window Functions)
-INSERT INTO Objetivo (id, id_capitulo, descricao, ordem) VALUES
-(7,  2, 'Localizar todos os registros de ataques atribuídos aos Justiceiros e contá-los.', 1),
-(8,  2, 'Agrupar os ataques por território e contar a quantidade de ocorrências em cada um.', 2),
-(9,  2, 'Filtrar apenas os territórios com número de ataques acima da média geral.', 3),
-(10, 2, 'Identificar a variação anual no número de ataques usando LAG() em uma CTE.', 4),
-(11, 2, 'Consultar a view de vínculos suspeitos entre espécies e territórios dos Justiceiros.', 5);
+INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
+(7,  2, 'Localizar todos os registros de ataques atribuídos aos Justiceiros e contá-los.', 1, 2),
+(8,  2, 'Agrupar os ataques por território e contar a quantidade de ocorrências em cada um.', 2, 2),
+(9,  2, 'Filtrar apenas os territórios com número de ataques acima da média geral.', 3, 4),
+(10, 2, 'Identificar a variação anual no número de ataques usando LAG() em uma CTE.', 4, 4),
+(11, 2, 'Consultar a view de vínculos suspeitos entre espécies e territórios dos Justiceiros.', 5, 0);
 
 -- Capítulo 3: TRAÇOS DE CONSPIRAÇÃO (5 objetivos, foco: JOINs múltiplos)
-INSERT INTO Objetivo (id, id_capitulo, descricao, ordem) VALUES
-(12, 3, 'Cruzar exportações e importações entre territórios para mapear as rotas usadas.', 1),
-(13, 3, 'Filtrar somente as transações que envolvem "pedras flamejantes".', 2),
-(14, 3, 'Localizar registros de troca de artefatos lendários entre territórios e personagens.', 3),
-(15, 3, 'Listar todos os personagens com acesso a minas de pedras flamejantes.', 4),
-(16, 3, 'Investigar transações autorizadas por Senhores das Terras cruzando com ataques posteriores.', 5);
+INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
+(12, 3, 'Cruzar exportações e importações entre territórios para mapear as rotas usadas.', 1, 3),
+(13, 3, 'Filtrar somente as transações que envolvem "pedras flamejantes".', 2, 3),
+(14, 3, 'Localizar registros de troca de artefatos lendários entre territórios e personagens.', 3, 3),
+(15, 3, 'Listar todos os personagens com acesso a minas de pedras flamejantes.', 4, 3),
+(16, 3, 'Investigar transações autorizadas por Senhores das Terras cruzando com ataques posteriores.', 5, 4);
 
 -- Capítulo 4: A MÁSCARA DO SEM NOME (5 objetivos, foco: subqueries e JOINs complexos)
-INSERT INTO Objetivo (id, id_capitulo, descricao, ordem) VALUES
-(17, 4, 'Relacionar ataques de maior impacto (nível > 8) com ordens emitidas pela Torre Mágica.', 1),
-(18, 4, 'Calcular a média de recursos usados em ataques agrupada por ano.', 2),
-(19, 4, 'Filtrar ataques cuja origem dos recursos seja o território de Val Nareth.', 3),
-(20, 4, 'Identificar os aliados políticos do Senhor da Torre Mágica de Val Nareth.', 4),
-(21, 4, 'Gerar ranking dos territórios mais afetados desde o surgimento do Sem Nome (após 535 d.C.).', 5);
+INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
+(17, 4, 'Relacionar ataques de maior impacto (nível > 8) com ordens emitidas pela Torre Mágica.', 1, 4),
+(18, 4, 'Calcular a média de recursos usados em ataques agrupada por ano.', 2, 4),
+(19, 4, 'Filtrar ataques cuja origem dos recursos seja o território de Val Nareth.', 3, 4),
+(20, 4, 'Identificar os aliados políticos do Senhor da Torre Mágica de Val Nareth.', 4, 4),
+(21, 4, 'Gerar ranking dos territórios mais afetados desde o surgimento do Sem Nome (após 535 d.C.).', 5, 4);
 
 -- Capítulo 5: O HEXADECIMAL E O GRIMÓRIO (5 objetivos, foco: funções avançadas e subconsultas)
-INSERT INTO Objetivo (id, id_capitulo, descricao, ordem) VALUES
-(22, 5, 'Recuperar o código hexadecimal guardado na Torre Mágica de Val Nareth.', 1),
-(23, 5, 'Decodificar o hexadecimal para obter a palavra-chave secreta usando ENCODE e DECODE.', 2),
-(24, 5, 'Encontrar ordens emitidas pelo Líder dos Justiceiros que mencionam a palavra-chave decifrada.', 3),
-(25, 5, 'Identificar o portador atual do Cajado do Coração de Fogo.', 4),
-(26, 5, 'Acessar o Grimório Primordial e revelar a verdade completa sobre a conspiração.', 5);
+INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
+(22, 5, 'Recuperar o código hexadecimal guardado na Torre Mágica de Val Nareth.', 1, 1),
+(23, 5, 'Decodificar o hexadecimal para obter a palavra-chave secreta usando ENCODE e DECODE.', 2, 4),
+(24, 5, 'Encontrar ordens emitidas pelo Líder dos Justiceiros que mencionam a palavra-chave decifrada.', 3, 4),
+(25, 5, 'Identificar o portador atual do Cajado do Coração de Fogo.', 4, 3),
+(26, 5, 'Acessar o Grimório Primordial e revelar a verdade completa sobre a conspiração.', 5, 0);
 
 -- ============================================================
 -- DICAS POR CAPÍTULO
