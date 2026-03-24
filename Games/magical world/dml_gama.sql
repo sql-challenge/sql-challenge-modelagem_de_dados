@@ -5,7 +5,7 @@
 
 -- Tabela Feudo (Total: 8)
 INSERT INTO Feudo (id, familiaFeudal, geografia) VALUES
-(1, 'Centauros de Val’Nareth', 'Norte'),
+(1, ‘Centauros de Val Nareth’, ‘Norte’),
 (2, 'Bruxos de Cintra', 'Leste'),
 (3, 'Elfos das Florestas do Oeste', 'Oeste'),
 (4, 'Sereias do Marés de Coral', 'Sul'),
@@ -28,9 +28,9 @@ INSERT INTO Pessoa (id, nome, sobreNome, raça, nascimento, óbito) VALUES
 
 -- Tabela Artefato (Total: 5)
 INSERT INTO Artefato (id, nome, categoria, id_proprietário) VALUES
-(1000, 'Cajado do Coração de Fogo', 'Leste', 101),
-(1001, 'Arca do Grimório Primordial', 'Leste', NULL),
-(1002, 'Pedra Filosofal', 'Leste', 102),
+(1000, 'Cajado do Coração de Fogo', 'L', 100),
+(1001, 'Arca do Grimório Primordial', 'L', NULL),
+(1002, 'Pedra Filosofal', 'L', 102),
 (1003, 'Poção de Cura', 'Centro', 105),
 (1004, 'Mapa Antigo', 'Centro', 104);
 
@@ -42,12 +42,12 @@ INSERT INTO AcademiaMagica (id, nome, qtd_matriculas, id_diretor) VALUES
 
 -- Tabela Torres_Magicas (Total: 1)
 INSERT INTO Torres_Magicas (id, nome, id_territorio, id_senhor_da_torre) VALUES
-(1, 'Torre Mágica de Val’Nareth', 1, 100);
+(1, ‘Torre Mágica de Val Nareth’, 1, 100);
 
 
 -- Tabela Cidade (Total: 4)
 INSERT INTO Cidade (id, nome, id_feudo, id_pessoa, id_academia) VALUES
-(1, 'Val’Nareth Capital', 1, 100, NULL),
+(1, ‘Val Nareth Capital’, 1, 100, NULL),
 (2, 'Cintra Principal', 2, 101, NULL),
 (3, 'Bosque Antigo', 3, 104, NULL),
 (4, 'Capital Real', 8, 102, 10);
@@ -111,6 +111,25 @@ INSERT INTO Registros_Secretos (id, id_torre, conteudo_hex) VALUES
 -- Tabela Grimorio_Primordial (Total: 1)
 INSERT INTO Grimorio_Primordial (id_localizacao, conteudo, id_pista) VALUES
 (1, 'O Grimório Primordial revela que a pandemia de fótons mágicos não foi um acidente, mas um ato deliberado dos próprios Arquimagos. Eles buscavam criar uma sociedade mágica mais resiliente, mas o experimento falhou, resultando na fragmentação das raças. O Sem Nome descobriu esta verdade e a usa para manipular os Justiceiros, prometendo restaurar a "pureza" mágica.', 1001);
+
+
+-- Tabela Posse_Artefatos (Total: 3)
+-- Cajado em posse do Líder dos Justiceiros (roubado d''O Sem Nome — revelação do Cap 5)
+-- Pedra Filosofal registrada com Rei Ferdinando desde o início
+-- Mapa Antigo com Senhor Elfo (aliado d''O Sem Nome)
+INSERT INTO Posse_Artefatos (id, id_artefato, id_personagem_portador, data_posse) VALUES
+(1, 1000, 101, '0539-11-01'),
+(2, 1002, 102, '0001-01-01'),
+(3, 1004, 104, '0400-01-01');
+
+
+-- Tabela vw_Pistas_Decifradas (Total: 1)
+INSERT INTO vw_Pistas_Decifradas (id_pista, descricao) VALUES
+(1001,
+ 'O Grimório Primordial encontra-se em Val Nareth. '
+ 'Decifre o registro hexadecimal da Torre Mágica e use '
+ 'a palavra-chave revelada para rastrear as ordens emitidas '
+ 'pelo Líder dos Justiceiros. O Cajado guiará o caminho final.');
 
 
 -- -----------------------------------------------------------------------------
