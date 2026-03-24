@@ -1,111 +1,178 @@
--- Drop do banco de dados se existir (para limpar antes de recriar)
-DROP DATABASE IF EXISTS db_gestao;
+-- ============================================================
+-- DDL - db_gestao
+-- Banco de gestão do SQL-Challenger
+-- Alinhado com entidades TypeScript do back-end
+-- Data: 2026-03-22
+-- ============================================================
 
--- Cria o banco de dados principal
+DROP DATABASE IF EXISTS db_gestao;
 CREATE DATABASE db_gestao;
 
--- Conecte-se a este banco de dados antes de executar as próximas etapas
--- psql -U admin -d db_gestao -h localhost -p 5432 (terminal)
+-- Conecte-se antes de continuar:
+-- psql -U admin -d db_gestao -h localhost -p 5432
 
--- Drop das tabelas se existirem (CASCADE remove triggers dependentes)
-DROP TABLE IF EXISTS capitulo_visao CASCADE;
-DROP TABLE IF EXISTS Desafio CASCADE;
-DROP TABLE IF EXISTS Capitulo CASCADE;
-DROP TABLE IF EXISTS Objetivo CASCADE;
-DROP TABLE IF EXISTS Consulta CASCADE;
-DROP TABLE IF EXISTS Visao CASCADE;
-DROP TABLE IF EXISTS Log CASCADE;
-
--- Drop da função de auditoria se existir
+-- ============================================================
+-- DROP das tabelas (ordem respeitando dependências de FK)
+-- ============================================================
+DROP TABLE IF EXISTS Log          CASCADE;
+DROP TABLE IF EXISTS Dica         CASCADE;
+DROP TABLE IF EXISTS Consulta     CASCADE;
+DROP TABLE IF EXISTS Objetivo     CASCADE;
+DROP TABLE IF EXISTS Visao        CASCADE;
+DROP TABLE IF EXISTS Capitulo     CASCADE;
+DROP TABLE IF EXISTS Desafio      CASCADE;
 DROP FUNCTION IF EXISTS log_changes() CASCADE;
 
--- Concede permissão de SELECT para todas as tabelas no esquema 'public'
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO user_gestao_challenge;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO user_gestao_challenge;
-
--- Criação das tabelas de conteúdo
-CREATE TABLE Visao (
-    id BIGINT PRIMARY KEY,
-    comando VARCHAR
-);
-
-CREATE TABLE Consulta (
-    id BIGINT PRIMARY KEY,
-    query VARCHAR
-);
-
-CREATE TABLE Objetivo (
-    id BIGINT PRIMARY KEY,
-    solucaoInsert VARCHAR,
-    descricao VARCHAR,
-    nivel INT
-);
-
-CREATE TABLE Capitulo (
-    id BIGINT PRIMARY KEY,
-    id_topico BIGINT,
-    id_nivel BIGINT,
-    id_visao BIGINT,
-    descricao VARCHAR,
-    numero INT,
-    titulo VARCHAR,
-    nivelMaximo INT,
-    FOREIGN KEY (id_topico) REFERENCES Objetivo(id),
-    FOREIGN KEY (id_nivel) REFERENCES Objetivo(id),
-    FOREIGN KEY (id_visao) REFERENCES Visao(id)
-);
-
+-- ============================================================
+-- TABELA: Desafio
+-- Representa o jogo/aventura completa (ex.: "Mistério do Mundo Mágico").
+-- Um Desafio contém vários Capítulos.
+-- ============================================================
 CREATE TABLE Desafio (
-    id BIGINT PRIMARY KEY,
-    nome VARCHAR,
-    descricao VARCHAR,
-    id_capitulo BIGINT,
-    FOREIGN KEY (id_capitulo) REFERENCES Capitulo(id)
+    id             BIGINT PRIMARY KEY,
+    titulo         VARCHAR(255) NOT NULL,
+    descricao      TEXT,
+    tempo_estimado VARCHAR(50),
+    taxa_conclusao NUMERIC(5,2) DEFAULT 0,
+    criado_em      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE capitulo_visao (
-    id BIGINT PRIMARY KEY,
-    id_capitulo BIGINT,
-    id_visao BIGINT,
-    FOREIGN KEY (id_capitulo) REFERENCES Capitulo(id),
-    FOREIGN KEY (id_visao) REFERENCES Visao(id)
+-- ============================================================
+-- TABELA: Capitulo
+-- Cada capítulo pertence a um Desafio.
+-- Possui narrativa (intro + contexto), recompensa de XP e número de ordem.
+-- ============================================================
+CREATE TABLE Capitulo (
+    id                BIGINT PRIMARY KEY,
+    id_desafio        BIGINT NOT NULL REFERENCES Desafio(id),
+    numero            INT    NOT NULL,
+    intro_historia    TEXT,
+    contexto_historia TEXT,
+    xp_recompensa     INT    NOT NULL DEFAULT 0
 );
 
--- Tabela para o sistema de auditoria (Log)
+-- ============================================================
+-- TABELA: Objetivo
+-- Cada objetivo pertence a um Capítulo e representa uma tarefa SQL
+-- que o jogador deve concluir, exibida em ordem crescente.
+-- ============================================================
+CREATE TABLE Objetivo (
+    id          BIGINT PRIMARY KEY,
+    id_capitulo BIGINT NOT NULL REFERENCES Capitulo(id),
+    descricao   TEXT   NOT NULL,
+    ordem       INT    NOT NULL,
+    nivel       INT    NOT NULL DEFAULT 0
+);
+
+-- ============================================================
+-- TABELA: Dica
+-- Dicas que o jogador pode revelar para ajudá-lo em cada capítulo.
+-- Cada dica revelada desconta penalidade_xp do XP final.
+-- ============================================================
+CREATE TABLE Dica (
+    id            BIGINT PRIMARY KEY,
+    id_capitulo   BIGINT       NOT NULL REFERENCES Capitulo(id),
+    ordem         INT          NOT NULL,
+    conteudo      TEXT         NOT NULL,
+    penalidade_xp INT          NOT NULL DEFAULT 0
+);
+
+-- ============================================================
+-- TABELA: Visao
+-- Representa uma VIEW do banco de dados do jogo (ex.: "regioes_reinos")
+-- que o jogador pode consultar naquele capítulo.
+-- O campo 'comando' guarda o nome da VIEW no banco do jogo.
+-- ============================================================
+CREATE TABLE Visao (
+    id          BIGINT       PRIMARY KEY,
+    id_capitulo BIGINT       NOT NULL REFERENCES Capitulo(id),
+    comando     VARCHAR(100) NOT NULL
+);
+
+-- ============================================================
+-- TABELA: Consulta
+-- A consulta-solução esperada para o capítulo.
+-- 'query'    → SQL correto que resolve o desafio do capítulo.
+-- 'colunas'  → Array JSON com os nomes das colunas do resultado esperado.
+-- 'resultado'→ Array JSON com as linhas de dados esperadas (opcional).
+-- ============================================================
+CREATE TABLE Consulta (
+    id          BIGINT PRIMARY KEY,
+    id_capitulo BIGINT NOT NULL REFERENCES Capitulo(id),
+    query       TEXT   NOT NULL,
+    colunas     JSONB,
+    resultado   JSONB
+);
+
+-- ============================================================
+-- TABELA: Log
+-- Auditoria automática de todas as operações DML nas tabelas principais.
+-- 'old_data' e 'new_data' são JSONB para compatibilidade com a entidade TS.
+-- ============================================================
 CREATE TABLE Log (
-    id SERIAL PRIMARY KEY,
+    id         SERIAL       PRIMARY KEY,
     table_name VARCHAR(255) NOT NULL,
-    operation VARCHAR(10) NOT NULL,
-    old_data TEXT,
-    new_data TEXT,
+    operation  VARCHAR(10)  NOT NULL,
+    old_data   JSONB,
+    new_data   JSONB,
     changed_by VARCHAR(255) NOT NULL,
-    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    changed_at TIMESTAMP    DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
--- Função de auditoria
+-- ============================================================
+-- FUNÇÃO DE AUDITORIA
+-- Registra INSERT, UPDATE e DELETE em JSONB (não TEXT).
+-- ============================================================
 CREATE OR REPLACE FUNCTION log_changes()
 RETURNS TRIGGER AS $$
 BEGIN
     IF (TG_OP = 'DELETE') THEN
         INSERT INTO Log (table_name, operation, old_data, changed_by)
-        VALUES (TG_TABLE_NAME, 'DELETE', OLD::text, current_user);
+        VALUES (TG_TABLE_NAME, 'DELETE', to_jsonb(OLD), current_user);
         RETURN OLD;
     ELSIF (TG_OP = 'UPDATE') THEN
         INSERT INTO Log (table_name, operation, old_data, new_data, changed_by)
-        VALUES (TG_TABLE_NAME, 'UPDATE', OLD::text, NEW::text, current_user);
+        VALUES (TG_TABLE_NAME, 'UPDATE', to_jsonb(OLD), to_jsonb(NEW), current_user);
         RETURN NEW;
     ELSIF (TG_OP = 'INSERT') THEN
         INSERT INTO Log (table_name, operation, new_data, changed_by)
-        VALUES (TG_TABLE_NAME, 'INSERT', NEW::text, current_user);
+        VALUES (TG_TABLE_NAME, 'INSERT', to_jsonb(NEW), current_user);
         RETURN NEW;
     END IF;
     RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
 
--- Criação dos triggers para as tabelas principais
-CREATE TRIGGER visao_audit AFTER INSERT OR UPDATE OR DELETE ON Visao FOR EACH ROW EXECUTE FUNCTION log_changes();
-CREATE TRIGGER consulta_audit AFTER INSERT OR UPDATE OR DELETE ON Consulta FOR EACH ROW EXECUTE FUNCTION log_changes();
-CREATE TRIGGER objetivo_audit AFTER INSERT OR UPDATE OR DELETE ON Objetivo FOR EACH ROW EXECUTE FUNCTION log_changes();
-CREATE TRIGGER capitulo_audit AFTER INSERT OR UPDATE OR DELETE ON Capitulo FOR EACH ROW EXECUTE FUNCTION log_changes();
-CREATE TRIGGER desafio_audit AFTER INSERT OR UPDATE OR DELETE ON Desafio FOR EACH ROW EXECUTE FUNCTION log_changes();
+-- ============================================================
+-- TRIGGERS DE AUDITORIA
+-- ============================================================
+CREATE TRIGGER desafio_audit
+    AFTER INSERT OR UPDATE OR DELETE ON Desafio
+    FOR EACH ROW EXECUTE FUNCTION log_changes();
+
+CREATE TRIGGER capitulo_audit
+    AFTER INSERT OR UPDATE OR DELETE ON Capitulo
+    FOR EACH ROW EXECUTE FUNCTION log_changes();
+
+CREATE TRIGGER objetivo_audit
+    AFTER INSERT OR UPDATE OR DELETE ON Objetivo
+    FOR EACH ROW EXECUTE FUNCTION log_changes();
+
+CREATE TRIGGER dica_audit
+    AFTER INSERT OR UPDATE OR DELETE ON Dica
+    FOR EACH ROW EXECUTE FUNCTION log_changes();
+
+CREATE TRIGGER visao_audit
+    AFTER INSERT OR UPDATE OR DELETE ON Visao
+    FOR EACH ROW EXECUTE FUNCTION log_changes();
+
+CREATE TRIGGER consulta_audit
+    AFTER INSERT OR UPDATE OR DELETE ON Consulta
+    FOR EACH ROW EXECUTE FUNCTION log_changes();
+
+-- ============================================================
+-- PERMISSÕES
+-- ============================================================
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO user_gestao_challenge;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO user_gestao_challenge;
