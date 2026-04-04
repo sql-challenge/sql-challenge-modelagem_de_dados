@@ -2,7 +2,7 @@
 -- DDL - db_gestao
 -- Banco de gestão do SQL-Challenger
 -- Alinhado com entidades TypeScript do back-end
--- Data: 2026-03-22
+-- Data: 2026-04-04
 -- ============================================================
 
 DROP DATABASE IF EXISTS db_gestao;
@@ -28,14 +28,14 @@ DROP FUNCTION IF EXISTS log_changes() CASCADE;
 -- Representa o jogo/aventura completa (ex.: "Mistério do Mundo Mágico").
 -- Um Desafio contém vários Capítulos.
 -- ============================================================
-CREATE TABLE Desafio (
-    id             BIGINT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Desafio (
+    id             BIGSERIAL    PRIMARY KEY,
     titulo         VARCHAR(255) NOT NULL,
     descricao      TEXT,
     tempo_estimado VARCHAR(50),
     taxa_conclusao NUMERIC(5,2) DEFAULT 0,
-    criado_em      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    criado_em      TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================================
@@ -43,13 +43,13 @@ CREATE TABLE Desafio (
 -- Cada capítulo pertence a um Desafio.
 -- Possui narrativa (intro + contexto), recompensa de XP e número de ordem.
 -- ============================================================
-CREATE TABLE Capitulo (
-    id                BIGINT PRIMARY KEY,
-    id_desafio        BIGINT NOT NULL REFERENCES Desafio(id),
-    numero            INT    NOT NULL,
+CREATE TABLE IF NOT EXISTS Capitulo (
+    id                BIGSERIAL PRIMARY KEY,
+    id_desafio        BIGINT    NOT NULL REFERENCES Desafio(id) ON DELETE CASCADE,
+    numero            INT       NOT NULL,
     intro_historia    TEXT,
     contexto_historia TEXT,
-    xp_recompensa     INT    NOT NULL DEFAULT 0
+    xp_recompensa     INT       NOT NULL DEFAULT 0
 );
 
 -- ============================================================
@@ -57,12 +57,12 @@ CREATE TABLE Capitulo (
 -- Cada objetivo pertence a um Capítulo e representa uma tarefa SQL
 -- que o jogador deve concluir, exibida em ordem crescente.
 -- ============================================================
-CREATE TABLE Objetivo (
-    id          BIGINT PRIMARY KEY,
-    id_capitulo BIGINT NOT NULL REFERENCES Capitulo(id),
-    descricao   TEXT   NOT NULL,
-    ordem       INT    NOT NULL,
-    nivel       INT    NOT NULL DEFAULT 0
+CREATE TABLE IF NOT EXISTS Objetivo (
+    id          BIGSERIAL PRIMARY KEY,
+    id_capitulo BIGINT    NOT NULL REFERENCES Capitulo(id) ON DELETE CASCADE,
+    descricao   TEXT      NOT NULL,
+    ordem       INT       NOT NULL,
+    nivel       INT       NOT NULL DEFAULT 0
 );
 
 -- ============================================================
@@ -70,9 +70,9 @@ CREATE TABLE Objetivo (
 -- Dicas que o jogador pode revelar para ajudá-lo em cada capítulo.
 -- Cada dica revelada desconta penalidade_xp do XP final.
 -- ============================================================
-CREATE TABLE Dica (
-    id            BIGINT PRIMARY KEY,
-    id_capitulo   BIGINT       NOT NULL REFERENCES Capitulo(id),
+CREATE TABLE IF NOT EXISTS Dica (
+    id            BIGSERIAL    PRIMARY KEY,
+    id_capitulo   BIGINT       NOT NULL REFERENCES Capitulo(id) ON DELETE CASCADE,
     ordem         INT          NOT NULL,
     conteudo      TEXT         NOT NULL,
     penalidade_xp INT          NOT NULL DEFAULT 0
@@ -84,9 +84,9 @@ CREATE TABLE Dica (
 -- que o jogador pode consultar naquele capítulo.
 -- O campo 'comando' guarda o nome da VIEW no banco do jogo.
 -- ============================================================
-CREATE TABLE Visao (
-    id          BIGINT       PRIMARY KEY,
-    id_capitulo BIGINT       NOT NULL REFERENCES Capitulo(id),
+CREATE TABLE IF NOT EXISTS Visao (
+    id          BIGSERIAL    PRIMARY KEY,
+    id_capitulo BIGINT       NOT NULL REFERENCES Capitulo(id) ON DELETE CASCADE,
     comando     VARCHAR(100) NOT NULL
 );
 
@@ -97,10 +97,10 @@ CREATE TABLE Visao (
 -- 'colunas'  → Array JSON com os nomes das colunas do resultado esperado.
 -- 'resultado'→ Array JSON com as linhas de dados esperadas (opcional).
 -- ============================================================
-CREATE TABLE Consulta (
-    id          BIGINT PRIMARY KEY,
-    id_capitulo BIGINT NOT NULL REFERENCES Capitulo(id),
-    query       TEXT   NOT NULL,
+CREATE TABLE IF NOT EXISTS Consulta (
+    id          BIGSERIAL PRIMARY KEY,
+    id_capitulo BIGINT    NOT NULL REFERENCES Capitulo(id) ON DELETE CASCADE,
+    query       TEXT      NOT NULL,
     colunas     JSONB,
     resultado   JSONB
 );
@@ -110,7 +110,7 @@ CREATE TABLE Consulta (
 -- Auditoria automática de todas as operações DML nas tabelas principais.
 -- 'old_data' e 'new_data' são JSONB para compatibilidade com a entidade TS.
 -- ============================================================
-CREATE TABLE Log (
+CREATE TABLE IF NOT EXISTS Log (
     id         SERIAL       PRIMARY KEY,
     table_name VARCHAR(255) NOT NULL,
     operation  VARCHAR(10)  NOT NULL,
@@ -145,31 +145,41 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- ============================================================
--- TRIGGERS DE AUDITORIA
+-- TRIGGERS DE AUDITORIA (idempotentes — seguros para re-execução)
 -- ============================================================
-CREATE TRIGGER desafio_audit
-    AFTER INSERT OR UPDATE OR DELETE ON Desafio
-    FOR EACH ROW EXECUTE FUNCTION log_changes();
-
-CREATE TRIGGER capitulo_audit
-    AFTER INSERT OR UPDATE OR DELETE ON Capitulo
-    FOR EACH ROW EXECUTE FUNCTION log_changes();
-
-CREATE TRIGGER objetivo_audit
-    AFTER INSERT OR UPDATE OR DELETE ON Objetivo
-    FOR EACH ROW EXECUTE FUNCTION log_changes();
-
-CREATE TRIGGER dica_audit
-    AFTER INSERT OR UPDATE OR DELETE ON Dica
-    FOR EACH ROW EXECUTE FUNCTION log_changes();
-
-CREATE TRIGGER visao_audit
-    AFTER INSERT OR UPDATE OR DELETE ON Visao
-    FOR EACH ROW EXECUTE FUNCTION log_changes();
-
-CREATE TRIGGER consulta_audit
-    AFTER INSERT OR UPDATE OR DELETE ON Consulta
-    FOR EACH ROW EXECUTE FUNCTION log_changes();
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'desafio_audit') THEN
+        CREATE TRIGGER desafio_audit
+            AFTER INSERT OR UPDATE OR DELETE ON Desafio
+            FOR EACH ROW EXECUTE FUNCTION log_changes();
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'capitulo_audit') THEN
+        CREATE TRIGGER capitulo_audit
+            AFTER INSERT OR UPDATE OR DELETE ON Capitulo
+            FOR EACH ROW EXECUTE FUNCTION log_changes();
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'objetivo_audit') THEN
+        CREATE TRIGGER objetivo_audit
+            AFTER INSERT OR UPDATE OR DELETE ON Objetivo
+            FOR EACH ROW EXECUTE FUNCTION log_changes();
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'dica_audit') THEN
+        CREATE TRIGGER dica_audit
+            AFTER INSERT OR UPDATE OR DELETE ON Dica
+            FOR EACH ROW EXECUTE FUNCTION log_changes();
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'visao_audit') THEN
+        CREATE TRIGGER visao_audit
+            AFTER INSERT OR UPDATE OR DELETE ON Visao
+            FOR EACH ROW EXECUTE FUNCTION log_changes();
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'consulta_audit') THEN
+        CREATE TRIGGER consulta_audit
+            AFTER INSERT OR UPDATE OR DELETE ON Consulta
+            FOR EACH ROW EXECUTE FUNCTION log_changes();
+    END IF;
+END $$;
 
 -- ============================================================
 -- PERMISSÕES
