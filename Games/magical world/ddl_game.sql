@@ -1,4 +1,10 @@
 -- ==========================================
+-- 0. SCHEMA
+-- ==========================================
+CREATE SCHEMA IF NOT EXISTS magical_world;
+SET search_path TO magical_world;
+
+-- ==========================================
 -- 1. DESTRUIR TUDO (RESET DO AMBIENTE)
 -- ==========================================
 DROP TABLE IF EXISTS vw_Pistas_Decifradas CASCADE;

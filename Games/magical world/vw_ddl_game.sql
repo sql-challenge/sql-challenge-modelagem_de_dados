@@ -1,3 +1,6 @@
+-- Execute conectado ao db_gestao com search_path apontando para magical_world
+SET search_path TO magical_world;
+
 -- =====================================================================
 -- CAPÍTULO 1: MAPEANDO O MUNDO MÁGICO [NÍVEL MÁXIMO: 1]
 -- Foco: SELECT e WHERE (Level 0 e Level 1)

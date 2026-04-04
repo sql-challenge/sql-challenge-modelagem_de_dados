@@ -1,10 +1,10 @@
 -- ============================================================
--- PATCH - Correções do banco do jogo (db_game)
+-- PATCH - Correções do banco do jogo
 -- Aplicar APÓS o dml_gama.sql estar carregado.
--- Data: 2026-03-22
+-- Date: 2026-03-22
+-- Execute conectado ao db_gestao com search_path apontando para magical_world.
 -- ============================================================
--- Execute conectado ao banco do jogo (db_game), não ao db_gestao.
--- ============================================================
+SET search_path TO magical_world;
 
 
 -- ============================================================
