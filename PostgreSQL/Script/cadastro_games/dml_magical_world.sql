@@ -80,33 +80,33 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
 -- ============================================================
 INSERT INTO Visao (id, id_capitulo, comando) VALUES
 -- Capítulo 1: mapeamento do mundo
-( 1, 1, 'regioes_reinos'),
-( 2, 1, 'especies_governantes'),
-( 3, 1, 'senhores_das_terras'),
-( 4, 1, 'artefatos_por_territorio'),
-( 5, 1, 'pessoas_vivas'),
+( 1, 1, 'magical_world.regioes_reinos'),
+( 2, 1, 'magical_world.especies_governantes'),
+( 3, 1, 'magical_world.senhores_das_terras'),
+( 4, 1, 'magical_world.artefatos_por_territorio'),
+( 5, 1, 'magical_world.pessoas_vivas'),
 -- Capítulo 2: investigação dos ataques
-( 6, 2, 'ataques_raw'),
-( 7, 2, 'ataques_detalhe'),
-( 8, 2, 'vinculos_suspeitos'),
+( 6, 2, 'magical_world.ataques_raw'),
+( 7, 2, 'magical_world.ataques_detalhe'),
+( 8, 2, 'magical_world.vinculos_suspeitos'),
 -- Capítulo 3: rastreamento de recursos e conspirações
-( 9, 3, 'transacoes_base'),
-(10, 3, 'posse_artefatos_base'),
-(11, 3, 'mineracao_base'),
-(12, 3, 'ordens_torre_base'),
-(13, 3, 'recursos_ataques_base'),
-(14, 3, 'ataques_origem_recurso'),
-(15, 3, 'aliancas_raw'),
+( 9, 3, 'magical_world.transacoes_base'),
+(10, 3, 'magical_world.posse_artefatos_base'),
+(11, 3, 'magical_world.mineracao_base'),
+(12, 3, 'magical_world.ordens_torre_base'),
+(13, 3, 'magical_world.recursos_ataques_base'),
+(14, 3, 'magical_world.ataques_origem_recurso'),
+(15, 3, 'magical_world.aliancas_raw'),
 -- Capítulo 4: reutiliza views do capítulo 3 — registradas aqui para getByCapituloId(4)
-(20, 4, 'ordens_torre_base'),
-(21, 4, 'recursos_ataques_base'),
-(22, 4, 'ataques_origem_recurso'),
-(23, 4, 'aliancas_raw'),
+(20, 4, 'magical_world.ordens_torre_base'),
+(21, 4, 'magical_world.recursos_ataques_base'),
+(22, 4, 'magical_world.ataques_origem_recurso'),
+(23, 4, 'magical_world.aliancas_raw'),
 -- Capítulo 5: desvendando o grimório
-(16, 5, 'registros_hex_raw'),
-(17, 5, 'ordens_emitidas_raw'),
-(18, 5, 'posse_artefato_personagem'),
-(19, 5, 'grimorio_final');
+(16, 5, 'magical_world.registros_hex_raw'),
+(17, 5, 'magical_world.ordens_emitidas_raw'),
+(18, 5, 'magical_world.posse_artefato_personagem'),
+(19, 5, 'magical_world.grimorio_final');
 
 -- ============================================================
 -- OBJETIVOS POR CAPÍTULO
