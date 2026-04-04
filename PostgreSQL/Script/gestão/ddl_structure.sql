@@ -12,6 +12,12 @@ CREATE DATABASE db_gestao;
 -- psql -U admin -d db_gestao -h localhost -p 5432
 
 -- ============================================================
+-- SCHEMAS
+-- ============================================================
+CREATE SCHEMA IF NOT EXISTS magical_world; -- banco do jogo
+-- As tabelas de gestão ficam no schema public (padrão)
+
+-- ============================================================
 -- DROP das tabelas (ordem respeitando dependências de FK)
 -- ============================================================
 DROP TABLE IF EXISTS Log          CASCADE;
@@ -87,7 +93,7 @@ CREATE TABLE IF NOT EXISTS Dica (
 CREATE TABLE IF NOT EXISTS Visao (
     id          BIGSERIAL    PRIMARY KEY,
     id_capitulo BIGINT       NOT NULL REFERENCES Capitulo(id) ON DELETE CASCADE,
-    comando     VARCHAR(100) NOT NULL
+    comando     VARCHAR(255) NOT NULL  -- nome qualificado: magical_world.nome_view
 );
 
 -- ============================================================
