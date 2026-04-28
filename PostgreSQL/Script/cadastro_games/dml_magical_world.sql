@@ -34,7 +34,7 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
  'encarregado de restaurar a paz, você recebe sua primeira missão.',
  'Mapeie as regiões e reinos do mundo mágico. Identifique as espécies que governam cada '
  'território, os Senhores das Terras nomeados pela realeza e os artefatos lendários que são '
- 'pivô de muitos conflitos. Explore as VIEWs disponíveis usando SELECT e WHERE.',
+ 'pivô de muitos conflitos. As evidências estão nas visões do banco — consulte-as com cuidado.',
  100),
 
 (2, 1, 2,
@@ -42,8 +42,8 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
  'com atentados brutais — incluindo a explosão de uma Academia Mágica. '
  'Para combatê-los, é preciso entender seu padrão de operação.',
  'Mergulhe nos registros de ataques atribuídos ao grupo. Analise onde atacam, '
- 'com que frequência e se há variação temporal. Use GROUP BY, HAVING e funções de janela '
- 'para encontrar o epicentro das atividades dos Justiceiros.',
+ 'com que frequência e se há variação ao longo do tempo. '
+ 'Encontre o epicentro das atividades dos Justiceiros agrupando e contando os dados.',
  200),
 
 (3, 1, 3,
@@ -52,7 +52,7 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
  'usadas em seus explosivos — alguém está financiando a conspiração.',
  'Investigue as transações comerciais entre territórios. Identifique rotas de suprimento, '
  'quem autoriza as movimentações de recursos e como os artefatos lendários trocam de mãos. '
- 'Use JOINs entre múltiplas tabelas para conectar as evidências.',
+ 'As pistas estão espalhadas por múltiplas fontes — conecte-as.',
  300),
 
 (4, 1, 4,
@@ -61,7 +61,7 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
  'Mas provar isso exige evidências sólidas.',
  'Conecte as ordens emitidas pela Torre Mágica de Val Nareth aos ataques dos Justiceiros. '
  'Identifique os aliados do Senhor da Torre e exponha a hierarquia da conspiração. '
- 'Use subqueries, CTEs e JOINs complexos para desvendar a rede de cumplicidade.',
+ 'A rede de cumplicidade é profunda — desvendá-la exige cruzar múltiplas camadas de dados.',
  400),
 
 (5, 1, 5,
@@ -70,7 +70,7 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
  'Este código é a chave para a verdade final.',
  'Encontre o registro hexadecimal, decodifique-o para obter a palavra-chave secreta '
  'e use essa informação para localizar o perdido Grimório Primordial. '
- 'O Grimório contém a história completa da conspiração. Use ENCODE, DECODE, LIKE e subconsultas.',
+ 'O Grimório contém a história completa da conspiração.',
  500);
 
 -- ============================================================
@@ -119,39 +119,39 @@ INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
 (2, 1, 'Listar as espécies que governam cada território.', 2, 0),
 (3, 1, 'Encontrar o nome e sobrenome dos Senhores das Terras de cada território.', 3, 0),
 (4, 1, 'Verificar quais territórios possuem ligação com artefatos da categoria Lendário (''L'').', 4, 1),
-(5, 1, 'Explorar as regiões com geografia Norte (''N'') e Sul (''S'') usando WHERE com OR.', 5, 1),
+(5, 1, 'Explorar as regiões com geografia Norte (''N'') e Sul (''S'').', 5, 1),
 (6, 1, 'Identificar a pessoa mais antiga ainda viva, obtendo seu nome e idade calculada.', 6, 2);
 
--- Capítulo 2: PRIMEIRAS PISTAS DOS JUSTICEIROS (5 objetivos, foco: GROUP BY e Window Functions)
+-- Capítulo 2: PRIMEIRAS PISTAS DOS JUSTICEIROS (5 objetivos: Level 1 → 2 → 3)
 INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
-(7,  2, 'Localizar todos os registros de ataques atribuídos aos Justiceiros e contá-los.', 1, 2),
-(8,  2, 'Agrupar os ataques por território e contar a quantidade de ocorrências em cada um.', 2, 2),
-(9,  2, 'Filtrar apenas os territórios com número de ataques acima da média geral.', 3, 4),
-(10, 2, 'Identificar a variação anual no número de ataques usando LAG() em uma CTE.', 4, 4),
-(11, 2, 'Consultar a view de vínculos suspeitos entre espécies e territórios dos Justiceiros.', 5, 0);
+(7,  2, 'Encontrar os ataques cujo autor é "Os Justiceiros".', 1, 1),
+(8,  2, 'Contar quantos ataques ocorreram em cada território.', 2, 2),
+(9,  2, 'Contar o total de ataques agrupados por autor.', 3, 2),
+(10, 2, 'Combinar as informações de autor e território em uma única consulta.', 4, 3),
+(11, 2, 'Cruzar vínculos suspeitos com os territórios atacados e contar as ocorrências.', 5, 3);
 
--- Capítulo 3: TRAÇOS DE CONSPIRAÇÃO (5 objetivos, foco: JOINs múltiplos)
+-- Capítulo 3: TRAÇOS DE CONSPIRAÇÃO (5 objetivos: Level 3 → 4)
 INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
-(12, 3, 'Cruzar exportações e importações entre territórios para mapear as rotas usadas.', 1, 3),
-(13, 3, 'Filtrar somente as transações que envolvem "pedras flamejantes".', 2, 3),
-(14, 3, 'Localizar registros de troca de artefatos lendários entre territórios e personagens.', 3, 3),
-(15, 3, 'Listar todos os personagens com acesso a minas de pedras flamejantes.', 4, 3),
-(16, 3, 'Investigar transações autorizadas por Senhores das Terras cruzando com ataques posteriores.', 5, 4);
+(12, 3, 'Identificar personagens que possuem artefatos e têm acesso a minas.', 1, 3),
+(13, 3, 'Cruzar transações de pedras flamejantes com ataques ao território de destino.', 2, 3),
+(14, 3, 'Relacionar ordens da Torre Mágica com ataques registrados no mesmo território.', 3, 3),
+(15, 3, 'Listar minerações de pedras flamejantes e a quantidade total por mina.', 4, 3),
+(16, 3, 'Calcular quantos ataques e recursos atingiram cada território que recebeu transações.', 5, 4);
 
--- Capítulo 4: A MÁSCARA DO SEM NOME (5 objetivos, foco: subqueries e JOINs complexos)
+-- Capítulo 4: A MÁSCARA DO SEM NOME (5 objetivos: Level 4)
 INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
-(17, 4, 'Relacionar ataques de maior impacto (nível > 8) com ordens emitidas pela Torre Mágica.', 1, 4),
-(18, 4, 'Calcular a média de recursos usados em ataques agrupada por ano.', 2, 4),
-(19, 4, 'Filtrar ataques cuja origem dos recursos seja o território de Val Nareth.', 3, 4),
-(20, 4, 'Identificar os aliados políticos do Senhor da Torre Mágica de Val Nareth.', 4, 4),
-(21, 4, 'Gerar ranking dos territórios mais afetados desde o surgimento do Sem Nome (após 535 d.C.).', 5, 4);
+(17, 4, 'Encontrar ordens da Torre ligadas a ataques com uso de recursos acima da média.', 1, 4),
+(18, 4, 'Somar recursos e contar ataques por território de origem.', 2, 4),
+(19, 4, 'Cruzar a origem dos recursos com o volume de ataques em cada território.', 3, 4),
+(20, 4, 'Identificar o personagem com mais alianças.', 4, 4),
+(21, 4, 'Calcular o total de ataques e recursos movimentados por cada torre.', 5, 4);
 
--- Capítulo 5: O HEXADECIMAL E O GRIMÓRIO (5 objetivos, foco: funções avançadas e subconsultas)
+-- Capítulo 5: O HEXADECIMAL E O GRIMÓRIO (5 objetivos: Level 1 → 3 → final)
 INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
-(22, 5, 'Recuperar o código hexadecimal guardado na Torre Mágica de Val Nareth.', 1, 1),
-(23, 5, 'Decodificar o hexadecimal para obter a palavra-chave secreta usando ENCODE e DECODE.', 2, 4),
-(24, 5, 'Encontrar ordens emitidas pelo Líder dos Justiceiros que mencionam a palavra-chave decifrada.', 3, 4),
-(25, 5, 'Identificar o portador atual do Cajado do Coração de Fogo.', 4, 3),
+(22, 5, 'Recuperar o registro secreto armazenado pela Torre Mágica de Val Nareth.', 1, 1),
+(23, 5, 'Explorar todos os registros secretos disponíveis no banco de dados.', 2, 0),
+(24, 5, 'Cruzar ordens emitidas com o portador de cada artefato.', 3, 3),
+(25, 5, 'Identificar o portador atual do Cajado do Coração de Fogo.', 4, 1),
 (26, 5, 'Acessar o Grimório Primordial e revelar a verdade completa sobre a conspiração.', 5, 0);
 
 -- ============================================================
@@ -255,55 +255,261 @@ INSERT INTO Dica (id, id_capitulo, ordem, conteudo, penalidade_xp) VALUES
  50);
 
 -- ============================================================
--- CONSULTAS-SOLUÇÃO POR CAPÍTULO
--- Uma consulta por capítulo: o SQL que o jogador deve produzir.
--- 'colunas' lista os nomes das colunas esperadas no resultado.
--- 'resultado' pode ser populado após rodar a query no banco do jogo.
+-- CONSULTAS-SOLUÇÃO POR OBJETIVO
+-- Uma consulta por objetivo: SQL progressivo que o jogador deve produzir.
+-- Nível 0 = SELECT simples | Nível 1 = WHERE | Nível 2 = GROUP BY / ORDER BY
+-- Nível 3 = JOINs          | Nível 4 = CTEs / Subqueries / Window Functions
 -- ============================================================
-INSERT INTO Consulta (id, id_capitulo, query, colunas, resultado) VALUES
 
-(1, 1,
- 'SELECT f.familiaFeudal AS nome_reino, f.geografia, '
- 'p.nome AS nome_senhor, p.sobreNome AS sobrenome_senhor '
- 'FROM Feudo f '
- 'JOIN Cidade c ON f.id = c.id_feudo '
- 'JOIN Pessoa p ON c.id_pessoa = p.id '
- 'ORDER BY f.familiaFeudal;',
- '["nome_reino", "geografia", "nome_senhor", "sobrenome_senhor"]'::jsonb,
- NULL),
+-- ─── CAPÍTULO 1: SELECT e WHERE ───────────────────────────────────────────────
 
-(2, 2,
- 'WITH AtaquesPorAno AS ('
- '  SELECT EXTRACT(YEAR FROM data_ocorrido) AS ano, COUNT(id) AS num_ataques '
- '  FROM ataques_detalhe GROUP BY ano'
+-- Obj 1 (nivel 0): SELECT * simples
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(1, 1, 1,
+ 'SELECT * FROM regioes_reinos;',
+ '["nome_reino", "geografia"]'::jsonb,
+ NULL);
+
+-- Obj 2 (nivel 0): SELECT * simples
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(2, 1, 2,
+ 'SELECT * FROM especies_governantes;',
+ '["especie_governante"]'::jsonb,
+ NULL);
+
+-- Obj 3 (nivel 0): SELECT * simples
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(3, 1, 3,
+ 'SELECT * FROM senhores_das_terras;',
+ '["nome_senhor", "sobrenome_senhor", "territorio_governado"]'::jsonb,
+ NULL);
+
+-- Obj 4 (nivel 1): WHERE simples
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(4, 1, 4,
+ 'SELECT * FROM artefatos_por_territorio WHERE categoria = ''L'';',
+ '["nome_artefato", "categoria", "territorio_localizacao"]'::jsonb,
+ NULL);
+
+-- Obj 5 (nivel 1): WHERE com OR
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(5, 1, 5,
+ 'SELECT * FROM regioes_reinos WHERE geografia = ''N'' OR geografia = ''S'';',
+ '["nome_reino", "geografia"]'::jsonb,
+ NULL);
+
+-- Obj 6 (nivel 2): ORDER BY + LIMIT
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(6, 1, 6,
+ 'SELECT * FROM pessoas_vivas ORDER BY nascimento ASC LIMIT 1;',
+ '["nome", "sobreNome", "nascimento", "óbito"]'::jsonb,
+ NULL);
+
+-- ─── CAPÍTULO 2: Level 1 → 2 → 3 ────────────────────────────────────────────
+
+-- Obj 7 (nivel 1): WHERE simples
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(7, 2, 7,
+ 'SELECT * FROM ataques_raw WHERE autor = ''Os Justiceiros'';',
+ '["data_ocorrido", "autor", "id_territorio"]'::jsonb,
+ NULL);
+
+-- Obj 8 (nivel 2): GROUP BY + COUNT
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(8, 2, 8,
+ 'SELECT territorio_atacado, COUNT(*) AS total_ataques '
+ 'FROM ataques_detalhe '
+ 'GROUP BY territorio_atacado '
+ 'ORDER BY total_ataques DESC;',
+ '["territorio_atacado", "total_ataques"]'::jsonb,
+ NULL);
+
+-- Obj 9 (nivel 2): GROUP BY + COUNT em outra dimensão
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(9, 2, 9,
+ 'SELECT autor, COUNT(*) AS total_ataques '
+ 'FROM ataques_raw '
+ 'GROUP BY autor '
+ 'ORDER BY total_ataques DESC;',
+ '["autor", "total_ataques"]'::jsonb,
+ NULL);
+
+-- Obj 10 (nivel 3): Primeiro JOIN — autor + território na mesma linha
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(10, 2, 10,
+ 'SELECT ar.data_ocorrido, ar.autor, ad.territorio_atacado '
+ 'FROM ataques_raw ar '
+ 'JOIN ataques_detalhe ad ON ar.data_ocorrido = ad.data_ocorrido '
+ 'WHERE ar.autor = ''Os Justiceiros'';',
+ '["data_ocorrido", "autor", "territorio_atacado"]'::jsonb,
+ NULL);
+
+-- Obj 11 (nivel 3): JOIN + GROUP BY — espécies suspeitas por território atacado
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(11, 2, 11,
+ 'SELECT vs.especie_associada, vs.territorio_associado, COUNT(ad.id) AS total_ataques '
+ 'FROM vinculos_suspeitos vs '
+ 'JOIN ataques_detalhe ad ON vs.territorio_associado = ad.territorio_atacado '
+ 'GROUP BY vs.especie_associada, vs.territorio_associado '
+ 'ORDER BY total_ataques DESC;',
+ '["especie_associada", "territorio_associado", "total_ataques"]'::jsonb,
+ NULL);
+
+-- ─── CAPÍTULO 3: Level 3 → 4 ─────────────────────────────────────────────────
+
+-- Obj 12 (nivel 3): JOIN artefatos + mineração — personagens com artefato E acesso a mina
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(12, 3, 12,
+ 'SELECT pa.nome_artefato, pa.categoria, m.recurso_principal '
+ 'FROM posse_artefatos_base pa '
+ 'JOIN mineracao_base m ON pa.id_personagem_portador = m.id_pessoa;',
+ '["nome_artefato", "categoria", "recurso_principal"]'::jsonb,
+ NULL);
+
+-- Obj 13 (nivel 3): JOIN transações + ataques por território de destino
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(13, 3, 13,
+ 'SELECT tb.recurso, tb.id_territorio_origem, tb.id_territorio_destino, rab.quantidade_recursos '
+ 'FROM transacoes_base tb '
+ 'JOIN recursos_ataques_base rab ON tb.id_territorio_destino = rab.id_territorio '
+ 'WHERE tb.recurso = ''pedras flamejantes'';',
+ '["recurso", "id_territorio_origem", "id_territorio_destino", "quantidade_recursos"]'::jsonb,
+ NULL);
+
+-- Obj 14 (nivel 3): JOIN ordens da Torre + ataques no mesmo território
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(14, 3, 14,
+ 'SELECT otb.descricao_ordem, otb.data_emissao, rab.data_ocorrido, rab.quantidade_recursos '
+ 'FROM ordens_torre_base otb '
+ 'JOIN recursos_ataques_base rab ON otb.id_territorio_alvo = rab.id_territorio;',
+ '["descricao_ordem", "data_emissao", "data_ocorrido", "quantidade_recursos"]'::jsonb,
+ NULL);
+
+-- Obj 15 (nivel 3): JOIN mineração + transações pelo autorizador
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(15, 3, 15,
+ 'SELECT m.id_mina, m.recurso_principal, tb.recurso AS recurso_transacao '
+ 'FROM mineracao_base m '
+ 'JOIN transacoes_base tb ON m.id_pessoa = tb.id_senhor_autorizador '
+ 'WHERE m.recurso_principal = ''pedras flamejantes'';',
+ '["id_mina", "recurso_principal", "recurso_transacao"]'::jsonb,
+ NULL);
+
+-- Obj 16 (nivel 4): JOIN + GROUP BY — total de ataques e recursos por território receptor
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(16, 3, 16,
+ 'SELECT tb.id_territorio_destino, '
+ 'COUNT(rab.id_territorio) AS total_ataques, '
+ 'SUM(rab.quantidade_recursos) AS total_recursos '
+ 'FROM transacoes_base tb '
+ 'JOIN recursos_ataques_base rab ON tb.id_territorio_destino = rab.id_territorio '
+ 'GROUP BY tb.id_territorio_destino '
+ 'ORDER BY total_ataques DESC;',
+ '["id_territorio_destino", "total_ataques", "total_recursos"]'::jsonb,
+ NULL);
+
+-- ─── CAPÍTULO 4: Level 4 ──────────────────────────────────────────────────────
+
+-- Obj 17 (nivel 4): JOIN + subquery — ordens ligadas a ataques acima da média de recursos
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(17, 4, 17,
+ 'SELECT otb.descricao_ordem, otb.data_emissao, rab.data_ocorrido, rab.quantidade_recursos '
+ 'FROM ordens_torre_base otb '
+ 'JOIN recursos_ataques_base rab ON otb.id_territorio_alvo = rab.id_territorio '
+ 'WHERE rab.quantidade_recursos > ('
+ '  SELECT AVG(quantidade_recursos) FROM recursos_ataques_base'
  ') '
- 'SELECT ano, num_ataques, '
- 'LAG(num_ataques, 1, 0) OVER (ORDER BY ano) AS ataques_ano_anterior, '
- 'num_ataques - LAG(num_ataques, 1, 0) OVER (ORDER BY ano) AS variacao '
- 'FROM AtaquesPorAno ORDER BY ano;',
- '["ano", "num_ataques", "ataques_ano_anterior", "variacao"]'::jsonb,
- NULL),
+ 'ORDER BY rab.quantidade_recursos DESC;',
+ '["descricao_ordem", "data_emissao", "data_ocorrido", "quantidade_recursos"]'::jsonb,
+ NULL);
 
-(3, 3,
- 'SELECT p_autorizador.nome AS senhor_autorizador, tc.recurso, a.data_ocorrido AS data_ataque '
- 'FROM Transacoes_Comerciais tc '
- 'JOIN Pessoa p_autorizador ON tc.id_senhor_autorizador = p_autorizador.id '
- 'JOIN Ataques a ON tc.id_territorio_destino = a.id_territorio '
- 'WHERE a.data_ocorrido > tc.data_transacao;',
- '["senhor_autorizador", "recurso", "data_ataque"]'::jsonb,
- NULL),
+-- Obj 18 (nivel 4): JOIN + GROUP BY — total de ataques e recursos por território de origem
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(18, 4, 18,
+ 'SELECT aor.territorio_origem_recurso, '
+ 'COUNT(*) AS total_ataques, '
+ 'SUM(rab.quantidade_recursos) AS total_recursos '
+ 'FROM ataques_origem_recurso aor '
+ 'JOIN recursos_ataques_base rab ON aor.data_ocorrido = rab.data_ocorrido '
+ 'GROUP BY aor.territorio_origem_recurso '
+ 'ORDER BY total_ataques DESC;',
+ '["territorio_origem_recurso", "total_ataques", "total_recursos"]'::jsonb,
+ NULL);
 
-(4, 4,
- 'SELECT p1.nome AS senhor_da_torre, p2.nome AS aliado '
- 'FROM Pessoa p1 '
- 'JOIN Torres_Magicas tm ON p1.id = tm.id_senhor_da_torre '
- 'JOIN aliancas_raw al ON p1.id = al.id_personagem1 '
- 'JOIN Pessoa p2 ON al.id_personagem2 = p2.id '
- 'WHERE tm.nome = ''Torre Mágica de Val Nareth'';',
- '["senhor_da_torre", "aliado"]'::jsonb,
- NULL),
+-- Obj 19 (nivel 4): JOIN + WHERE com LIKE — origem dos recursos que contém "Val"
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(19, 4, 19,
+ 'SELECT aor.territorio_origem_recurso, aor.recurso_principal_usado, rab.quantidade_recursos '
+ 'FROM ataques_origem_recurso aor '
+ 'JOIN recursos_ataques_base rab ON aor.data_ocorrido = rab.data_ocorrido '
+ 'WHERE aor.territorio_origem_recurso LIKE ''%Val%'';',
+ '["territorio_origem_recurso", "recurso_principal_usado", "quantidade_recursos"]'::jsonb,
+ NULL);
 
-(5, 5,
+-- Obj 20 (nivel 4): GROUP BY + subquery — personagem com mais alianças
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(20, 4, 20,
+ 'SELECT id_personagem1, COUNT(id_personagem2) AS total_aliados '
+ 'FROM aliancas_raw '
+ 'GROUP BY id_personagem1 '
+ 'HAVING COUNT(id_personagem2) = ('
+ '  SELECT MAX(cnt) FROM ('
+ '    SELECT COUNT(id_personagem2) AS cnt FROM aliancas_raw GROUP BY id_personagem1'
+ '  ) sub'
+ ');',
+ '["id_personagem1", "total_aliados"]'::jsonb,
+ NULL);
+
+-- Obj 21 (nivel 4): JOIN 2 tabelas + GROUP BY — ataques e recursos por torre
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(21, 4, 21,
+ 'SELECT otb.id_torre, '
+ 'COUNT(rab.id_territorio) AS total_ataques, '
+ 'SUM(rab.quantidade_recursos) AS total_recursos '
+ 'FROM ordens_torre_base otb '
+ 'JOIN recursos_ataques_base rab ON otb.id_territorio_alvo = rab.id_territorio '
+ 'GROUP BY otb.id_torre '
+ 'ORDER BY total_ataques DESC;',
+ '["id_torre", "total_ataques", "total_recursos"]'::jsonb,
+ NULL);
+
+-- ─── CAPÍTULO 5: Funções avançadas e subconsultas ─────────────────────────────
+
+-- Obj 22 (nivel 1): Recuperar hex da Torre de Val Nareth
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(22, 5, 22,
+ 'SELECT * FROM registros_hex_raw '
+ 'WHERE nome_torre = ''Torre Mágica de Val Nareth'';',
+ '["conteudo_hex", "nome_torre"]'::jsonb,
+ NULL);
+
+-- Obj 23 (nivel 0): Explorar todos os registros secretos
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(23, 5, 23,
+ 'SELECT * FROM registros_hex_raw;',
+ '["conteudo_hex", "nome_torre"]'::jsonb,
+ NULL);
+
+-- Obj 24 (nivel 3): JOIN ordens emitidas + portadores de artefatos
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(24, 5, 24,
+ 'SELECT oer.conteudo_ordem, pac.nome_portador, pac.nome_artefato '
+ 'FROM ordens_emitidas_raw oer '
+ 'JOIN posse_artefato_personagem pac ON oer.id_emissor = pac.id_artefato;',
+ '["conteudo_ordem", "nome_portador", "nome_artefato"]'::jsonb,
+ NULL);
+
+-- Obj 25 (nivel 3): Portador atual do Cajado do Coração de Fogo
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(25, 5, 25,
+ 'SELECT * FROM posse_artefato_personagem '
+ 'WHERE nome_artefato = ''Cajado do Coração de Fogo'';',
+ '["id_artefato", "nome_portador", "sobrenome_portador", "nome_artefato"]'::jsonb,
+ NULL);
+
+-- Obj 26 (nivel 0): Revelar o Grimório Primordial
+INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
+(26, 5, 26,
  'SELECT * FROM grimorio_final;',
  '["conteudo"]'::jsonb,
  NULL);

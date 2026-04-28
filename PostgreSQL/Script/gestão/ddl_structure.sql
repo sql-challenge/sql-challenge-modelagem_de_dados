@@ -98,17 +98,19 @@ CREATE TABLE IF NOT EXISTS Visao (
 
 -- ============================================================
 -- TABELA: Consulta
--- A consulta-solução esperada para o capítulo.
--- 'query'    → SQL correto que resolve o desafio do capítulo.
--- 'colunas'  → Array JSON com os nomes das colunas do resultado esperado.
--- 'resultado'→ Array JSON com as linhas de dados esperadas (opcional).
+-- A consulta-solução esperada para cada objetivo do capítulo.
+-- 'query'      → SQL correto que resolve o objetivo.
+-- 'colunas'    → Array JSON com os nomes das colunas do resultado esperado.
+-- 'resultado'  → Array JSON com as linhas de dados esperadas (opcional).
+-- 'id_objetivo'→ Vínculo com o objetivo específico que esta consulta valida.
 -- ============================================================
 CREATE TABLE IF NOT EXISTS Consulta (
-    id          BIGSERIAL PRIMARY KEY,
-    id_capitulo BIGINT    NOT NULL REFERENCES Capitulo(id) ON DELETE CASCADE,
-    query       TEXT      NOT NULL,
-    colunas     JSONB,
-    resultado   JSONB
+    id           BIGSERIAL PRIMARY KEY,
+    id_capitulo  BIGINT    NOT NULL REFERENCES Capitulo(id) ON DELETE CASCADE,
+    id_objetivo  BIGINT    REFERENCES Objetivo(id) ON DELETE CASCADE,
+    query        TEXT      NOT NULL,
+    colunas      JSONB,
+    resultado    JSONB
 );
 
 -- ============================================================

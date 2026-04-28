@@ -1,3 +1,4 @@
+SET client_encoding = 'UTF8';
 -- Execute conectado ao db_gestao com search_path apontando para magical_world
 SET search_path TO magical_world;
 
