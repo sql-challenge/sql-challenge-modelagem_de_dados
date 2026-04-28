@@ -34,7 +34,7 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
  'encarregado de restaurar a paz, você recebe sua primeira missão.',
  'Mapeie as regiões e reinos do mundo mágico. Identifique as espécies que governam cada '
  'território, os Senhores das Terras nomeados pela realeza e os artefatos lendários que são '
- 'pivô de muitos conflitos. Explore as VIEWs disponíveis usando SELECT e WHERE.',
+ 'pivô de muitos conflitos. As evidências estão nas visões do banco — consulte-as com cuidado.',
  100),
 
 (2, 1, 2,
@@ -42,8 +42,8 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
  'com atentados brutais — incluindo a explosão de uma Academia Mágica. '
  'Para combatê-los, é preciso entender seu padrão de operação.',
  'Mergulhe nos registros de ataques atribuídos ao grupo. Analise onde atacam, '
- 'com que frequência e se há variação temporal. Use GROUP BY, HAVING e funções de janela '
- 'para encontrar o epicentro das atividades dos Justiceiros.',
+ 'com que frequência e se há variação ao longo do tempo. '
+ 'Encontre o epicentro das atividades dos Justiceiros agrupando e contando os dados.',
  200),
 
 (3, 1, 3,
@@ -52,7 +52,7 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
  'usadas em seus explosivos — alguém está financiando a conspiração.',
  'Investigue as transações comerciais entre territórios. Identifique rotas de suprimento, '
  'quem autoriza as movimentações de recursos e como os artefatos lendários trocam de mãos. '
- 'Use JOINs entre múltiplas tabelas para conectar as evidências.',
+ 'As pistas estão espalhadas por múltiplas fontes — conecte-as.',
  300),
 
 (4, 1, 4,
@@ -61,7 +61,7 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
  'Mas provar isso exige evidências sólidas.',
  'Conecte as ordens emitidas pela Torre Mágica de Val Nareth aos ataques dos Justiceiros. '
  'Identifique os aliados do Senhor da Torre e exponha a hierarquia da conspiração. '
- 'Use subqueries, CTEs e JOINs complexos para desvendar a rede de cumplicidade.',
+ 'A rede de cumplicidade é profunda — desvendá-la exige cruzar múltiplas camadas de dados.',
  400),
 
 (5, 1, 5,
@@ -70,7 +70,7 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
  'Este código é a chave para a verdade final.',
  'Encontre o registro hexadecimal, decodifique-o para obter a palavra-chave secreta '
  'e use essa informação para localizar o perdido Grimório Primordial. '
- 'O Grimório contém a história completa da conspiração. Use ENCODE, DECODE, LIKE e subconsultas.',
+ 'O Grimório contém a história completa da conspiração.',
  500);
 
 -- ============================================================
@@ -119,38 +119,38 @@ INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
 (2, 1, 'Listar as espécies que governam cada território.', 2, 0),
 (3, 1, 'Encontrar o nome e sobrenome dos Senhores das Terras de cada território.', 3, 0),
 (4, 1, 'Verificar quais territórios possuem ligação com artefatos da categoria Lendário (''L'').', 4, 1),
-(5, 1, 'Explorar as regiões com geografia Norte (''N'') e Sul (''S'') usando WHERE com OR.', 5, 1),
+(5, 1, 'Explorar as regiões com geografia Norte (''N'') e Sul (''S'').', 5, 1),
 (6, 1, 'Identificar a pessoa mais antiga ainda viva, obtendo seu nome e idade calculada.', 6, 2);
 
 -- Capítulo 2: PRIMEIRAS PISTAS DOS JUSTICEIROS (5 objetivos: Level 1 → 2 → 3)
 INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
-(7,  2, 'Filtrar os ataques cujo autor é "Os Justiceiros" usando WHERE.', 1, 1),
-(8,  2, 'Contar quantos ataques ocorreram em cada território usando GROUP BY e COUNT.', 2, 2),
+(7,  2, 'Encontrar os ataques cujo autor é "Os Justiceiros".', 1, 1),
+(8,  2, 'Contar quantos ataques ocorreram em cada território.', 2, 2),
 (9,  2, 'Contar o total de ataques agrupados por autor.', 3, 2),
-(10, 2, 'Combinar as informações de autor e território cruzando duas tabelas com JOIN.', 4, 3),
-(11, 2, 'Cruzar vínculos suspeitos com os territórios atacados usando JOIN e COUNT.', 5, 3);
+(10, 2, 'Combinar as informações de autor e território em uma única consulta.', 4, 3),
+(11, 2, 'Cruzar vínculos suspeitos com os territórios atacados e contar as ocorrências.', 5, 3);
 
 -- Capítulo 3: TRAÇOS DE CONSPIRAÇÃO (5 objetivos: Level 3 → 4)
 INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
-(12, 3, 'Identificar personagens que possuem artefatos e têm acesso a minas usando JOIN.', 1, 3),
+(12, 3, 'Identificar personagens que possuem artefatos e têm acesso a minas.', 1, 3),
 (13, 3, 'Cruzar transações de pedras flamejantes com ataques ao território de destino.', 2, 3),
 (14, 3, 'Relacionar ordens da Torre Mágica com ataques registrados no mesmo território.', 3, 3),
 (15, 3, 'Listar minerações de pedras flamejantes e a quantidade total por mina.', 4, 3),
-(16, 3, 'Calcular, via JOIN, quantos ataques e recursos atingiram cada território que recebeu transações.', 5, 4);
+(16, 3, 'Calcular quantos ataques e recursos atingiram cada território que recebeu transações.', 5, 4);
 
 -- Capítulo 4: A MÁSCARA DO SEM NOME (5 objetivos: Level 4)
 INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
 (17, 4, 'Encontrar ordens da Torre ligadas a ataques com uso de recursos acima da média.', 1, 4),
-(18, 4, 'Somar recursos e contar ataques por território de origem usando JOIN.', 2, 4),
-(19, 4, 'Cruzar a origem dos recursos com o volume de ataques em cada território via JOIN e WHERE.', 3, 4),
-(20, 4, 'Identificar o personagem com mais alianças usando GROUP BY e subquery.', 4, 4),
-(21, 4, 'Calcular o total de ataques e recursos movimentados por cada torre usando JOIN e GROUP BY.', 5, 4);
+(18, 4, 'Somar recursos e contar ataques por território de origem.', 2, 4),
+(19, 4, 'Cruzar a origem dos recursos com o volume de ataques em cada território.', 3, 4),
+(20, 4, 'Identificar o personagem com mais alianças.', 4, 4),
+(21, 4, 'Calcular o total de ataques e recursos movimentados por cada torre.', 5, 4);
 
 -- Capítulo 5: O HEXADECIMAL E O GRIMÓRIO (5 objetivos: Level 1 → 3 → final)
 INSERT INTO Objetivo (id, id_capitulo, descricao, ordem, nivel) VALUES
 (22, 5, 'Recuperar o registro secreto armazenado pela Torre Mágica de Val Nareth.', 1, 1),
 (23, 5, 'Explorar todos os registros secretos disponíveis no banco de dados.', 2, 0),
-(24, 5, 'Cruzar ordens emitidas com o portador de cada artefato usando JOIN.', 3, 3),
+(24, 5, 'Cruzar ordens emitidas com o portador de cada artefato.', 3, 3),
 (25, 5, 'Identificar o portador atual do Cajado do Coração de Fogo.', 4, 1),
 (26, 5, 'Acessar o Grimório Primordial e revelar a verdade completa sobre a conspiração.', 5, 0);
 
