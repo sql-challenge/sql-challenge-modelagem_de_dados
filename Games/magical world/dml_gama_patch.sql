@@ -38,7 +38,11 @@ INSERT INTO Posse_Artefatos (id, id_artefato, id_personagem_portador, data_posse
 -- Pedra Filosofal registrada com Rei Ferdinando desde sempre
 (2, 1002, 102, '0001-01-01'),
 -- Mapa Antigo com Senhor Elfo (aliado d''O Sem Nome)
-(3, 1004, 104, '0400-01-01');
+(3, 1004, 104, '0400-01-01')
+ON CONFLICT (id) DO UPDATE SET
+  id_artefato = EXCLUDED.id_artefato,
+  id_personagem_portador = EXCLUDED.id_personagem_portador,
+  data_posse = EXCLUDED.data_posse;
 
 
 -- ============================================================
