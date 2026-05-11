@@ -1,11 +1,32 @@
--- Tabela Feudo
+SET client_encoding = 'UTF8';
+
+CREATE SCHEMA IF NOT EXISTS magical_world;
+SET search_path TO magical_world;
+
+DROP TABLE IF EXISTS vw_Pistas_Decifradas CASCADE;
+DROP TABLE IF EXISTS Grimorio_Primordial CASCADE;
+DROP TABLE IF EXISTS Posse_Artefatos CASCADE;
+DROP TABLE IF EXISTS Ordens_Emitidas CASCADE;
+DROP TABLE IF EXISTS Registros_Secretos CASCADE;
+DROP TABLE IF EXISTS Aliados_Politicos CASCADE;
+DROP TABLE IF EXISTS Ordens_Torre_Magica CASCADE;
+DROP TABLE IF EXISTS Torres_Magicas CASCADE;
+DROP TABLE IF EXISTS Permissoes_Mineracao CASCADE;
+DROP TABLE IF EXISTS Minas CASCADE;
+DROP TABLE IF EXISTS Transacoes_Comerciais CASCADE;
+DROP TABLE IF EXISTS Ataques CASCADE;
+DROP TABLE IF EXISTS Cidade CASCADE;
+DROP TABLE IF EXISTS AcademiaMagica CASCADE;
+DROP TABLE IF EXISTS Artefato CASCADE;
+DROP TABLE IF EXISTS Pessoa CASCADE;
+DROP TABLE IF EXISTS Feudo CASCADE;
+
 CREATE TABLE Feudo (
     id BIGINT PRIMARY KEY,
     familiaFeudal VARCHAR(255) NOT NULL,
     geografia CHAR(1)
 );
 
--- Tabela Pessoa
 CREATE TABLE Pessoa (
     id BIGINT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
@@ -15,7 +36,6 @@ CREATE TABLE Pessoa (
     óbito DATE
 );
 
--- Tabela Artefato
 CREATE TABLE Artefato (
     id BIGINT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
@@ -23,7 +43,6 @@ CREATE TABLE Artefato (
     id_proprietário BIGINT REFERENCES Pessoa(id)
 );
 
--- Tabela AcademiaMagica
 CREATE TABLE AcademiaMagica (
     id BIGINT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
@@ -31,7 +50,6 @@ CREATE TABLE AcademiaMagica (
     id_diretor BIGINT REFERENCES Pessoa(id)
 );
 
--- Tabela Cidade 
 CREATE TABLE Cidade (
     id BIGINT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
@@ -40,7 +58,6 @@ CREATE TABLE Cidade (
     id_academia BIGINT REFERENCES AcademiaMagica(id)
 );
 
--- Tabela para registrar os ataques
 CREATE TABLE Ataques (
     id BIGINT PRIMARY KEY,
     data_ocorrido DATE NOT NULL,
@@ -51,7 +68,6 @@ CREATE TABLE Ataques (
     quantidade_recursos INT
 );
 
--- Tabela para registrar transações comerciais entre territórios
 CREATE TABLE Transacoes_Comerciais (
     id BIGINT PRIMARY KEY,
     id_territorio_origem BIGINT REFERENCES Feudo(id),
@@ -61,21 +77,18 @@ CREATE TABLE Transacoes_Comerciais (
     id_senhor_autorizador BIGINT REFERENCES Pessoa(id)
 );
 
--- Tabela para as minas e seus recursos
 CREATE TABLE Minas (
     id BIGINT PRIMARY KEY,
     id_territorio BIGINT REFERENCES Feudo(id),
     recurso_principal VARCHAR(255)
 );
 
--- Tabela de permissões para mineração, ligando Pessoas a Minas
 CREATE TABLE Permissoes_Mineracao (
     id BIGINT PRIMARY KEY,
     id_mina BIGINT REFERENCES Minas(id),
     id_pessoa BIGINT REFERENCES Pessoa(id)
 );
 
--- Tabela para as torres mágicas, centros de poder
 CREATE TABLE Torres_Magicas (
     id BIGINT PRIMARY KEY,
     nome VARCHAR(255),
@@ -83,7 +96,6 @@ CREATE TABLE Torres_Magicas (
     id_senhor_da_torre BIGINT REFERENCES Pessoa(id)
 );
 
--- Tabela para registrar ordens emitidas pelas torres
 CREATE TABLE Ordens_Torre_Magica (
     id_ordem BIGINT PRIMARY KEY,
     id_torre BIGINT REFERENCES Torres_Magicas(id),
@@ -92,7 +104,6 @@ CREATE TABLE Ordens_Torre_Magica (
     descricao_ordem TEXT
 );
 
--- Tabela para registrar alianças políticas entre personagens
 CREATE TABLE Aliados_Politicos (
     id_alianca BIGINT PRIMARY KEY,
     id_personagem1 BIGINT REFERENCES Pessoa(id),
@@ -100,21 +111,18 @@ CREATE TABLE Aliados_Politicos (
     data_inicio_alianca DATE
 );
 
--- Tabela para os registros secretos em hexadecimal
 CREATE TABLE Registros_Secretos (
     id BIGINT PRIMARY KEY,
     id_torre BIGINT REFERENCES Torres_Magicas(id),
     conteudo_hex TEXT
 );
 
--- Tabela para ordens diretas emitidas por personagens
 CREATE TABLE Ordens_Emitidas (
     id BIGINT PRIMARY KEY,
     id_emissor BIGINT REFERENCES Pessoa(id),
     conteudo_ordem TEXT
 );
 
--- Tabela para rastrear a posse de artefatos
 CREATE TABLE Posse_Artefatos (
     id BIGINT PRIMARY KEY,
     id_artefato BIGINT REFERENCES Artefato(id),
@@ -122,14 +130,12 @@ CREATE TABLE Posse_Artefatos (
     data_posse DATE
 );
 
--- Tabela final que guarda a localização do Grimório
 CREATE TABLE Grimorio_Primordial (
     id_localizacao BIGINT PRIMARY KEY,
     conteudo TEXT,
     id_pista BIGINT
 );
 
--- Tabela para as 'visões' que o jogador pode consultar
 CREATE TABLE vw_Pistas_Decifradas (
     id_pista BIGINT PRIMARY KEY,
     descricao TEXT

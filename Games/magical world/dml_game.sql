@@ -1,6 +1,6 @@
 -- Tabela Feudo (id, familiaFeudal, geografia)
 INSERT INTO Feudo (id, familiaFeudal, geografia) VALUES
-(1, 'Centauros de Val’Nareth', 'N'),
+(1, 'Centauros de Val Nareth', 'N'),
 (2, 'Bruxos de Cintra', 'L'),
 (3, 'Elfos das Florestas do Oeste', 'O'),
 (4, 'Sereias do Marés de Coral', 'S'),
@@ -20,12 +20,12 @@ INSERT INTO Pessoa (id, nome, sobreNome, raça, nascimento, óbito) VALUES
 (106, 'Vítima', 'Explosão', 'Maga', '0450-01-01', '0539-11-01');
 
 -- Tabela Artefato 
-INSERT INTO Artefato (id, nome, categoria, quantidade, id_proprietário) VALUES
-(1000, 'Cajado do Coração de Fogo', 'L', 1, 101),
-(1001, 'Arca do Grimório Primordial', 'L', 1, NULL),
-(1002, 'Pedra Filosofal', 'L', 1, 102),
-(1003, 'Poção de Cura', 'C', 10, 105),
-(1004, 'Mapa Antigo', 'C', 1, 104);
+INSERT INTO Artefato (id, nome, categoria, id_proprietário) VALUES
+(1000, 'Cajado do Coração de Fogo', 'L', 100),
+(1001, 'Arca do Grimório Primordial', 'L', NULL),
+(1002, 'Pedra Filosofal', 'L', 102),
+(1003, 'Poção de Cura', 'C', 105),
+(1004, 'Mapa Antigo', 'C', 104);
 
 -- Tabela AcademiaMagica 
 INSERT INTO AcademiaMagica (id, nome, qtd_matriculas, id_diretor) VALUES
@@ -33,11 +33,11 @@ INSERT INTO AcademiaMagica (id, nome, qtd_matriculas, id_diretor) VALUES
 
 -- Tabela Torres_Magicas (id, nome, id_territorio, id_senhor_da_torre)
 INSERT INTO Torres_Magicas (id, nome, id_territorio, id_senhor_da_torre) VALUES
-(1, 'Torre Mágica de Val’Nareth', 1, 100);
+(1, 'Torre Mágica de Val Nareth', 1, 100);
 
 -- Tabela Cidade (id, nome, id_feudo, id_pessoa, id_academia)
 INSERT INTO Cidade (id, nome, id_feudo, id_pessoa, id_academia) VALUES
-(1, 'Val’Nareth Capital', 1, 100, NULL),
+(1, 'Val Nareth Capital', 1, 100, NULL),
 (2, 'Cintra Principal', 2, 101, NULL),
 (3, 'Bosque Antigo', 3, 104, NULL),
 (4, 'Capital Real', 8, 102, 10);
@@ -93,5 +93,5 @@ INSERT INTO Registros_Secretos (id, id_torre, conteudo_hex) VALUES
 INSERT INTO Grimorio_Primordial (id_localizacao, conteudo, id_pista) VALUES
 (1, 'O Grimório Primordial revela que a pandemia de fótons mágicos não foi um acidente, mas um ato deliberado dos próprios Arquimagos. Eles buscavam criar uma sociedade mágica mais resiliente, mas o experimento falhou, resultando na fragmentação das raças. O Sem Nome descobriu esta verdade e a usa para manipular os Justiceiros, prometendo restaurar a "pureza" mágica.', 1);
 
--- Tabela vw_Pistas_Decifradas (INSERT INTO vw_Pistas_Decifradas (id_pista, descricao) VALUES
-(1, 'A pista final decodificada aponta para a Torre Mágica de Val’Nareth e o atributo chave "torremagoValNareth".');
+INSERT INTO vw_Pistas_Decifradas (id_pista, descricao) VALUES
+(1, 'A pista final decodificada aponta para a Torre Mágica de Val Nareth e o atributo chave "torremagoValNareth".');

@@ -1,3 +1,11 @@
+-- =====================================================================
+-- WARNING: This file has known bugs that need fixing before use:
+--   1. Unescaped apostrophes in Val'Nareth names (SQL syntax error)
+--   2. Cajado do Coração de Fogo id_proprietário=101 (should be 100)
+--   3. Uses CHAR(1) geography/categoria values (compatible with merged DDL)
+-- Fixes in progress on the merge/facundes-main branch.
+-- =====================================================================
+
 -- -----------------------------------------------------------------------------
 -- FASE 1: PISTAS (Dados cruciais para a investigação - Compatível com DDL)
 -- -----------------------------------------------------------------------------
