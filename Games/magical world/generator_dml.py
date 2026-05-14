@@ -5,7 +5,7 @@ from datetime import date, timedelta
 
 # IDs base para evitar conflito com distratores (Distratores começarão em 300 para Feudo/Pessoa)
 FEUDO_PISTAS = [
-    (1, 'Centauros de Val’Nareth', 'N'),
+    (1, 'Centauros de Val Nareth', 'N'),
     (2, 'Bruxos de Cintra', 'L'),
     (3, 'Elfos das Florestas do Oeste', 'O'),
     (4, 'Sereias do Marés de Coral', 'S'),
@@ -35,10 +35,10 @@ ACADEMIA_PISTAS = [
     (10, 'Academia Central de Magia', 500, 105)
 ]
 TORRES_PISTAS = [
-    (1, 'Torre Mágica de Val’Nareth', 1, 100)
+    (1, 'Torre Mágica de Val Nareth', 1, 100)
 ]
 CIDADE_PISTAS = [
-    (1, 'Val’Nareth Capital', 1, 100, None),
+    (1, 'Val Nareth Capital', 1, 100, None),
     (2, 'Cintra Principal', 2, 101, None),
     (3, 'Bosque Antigo', 3, 104, None),
     (4, 'Capital Real', 8, 102, 10)

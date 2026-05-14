@@ -135,10 +135,10 @@ SELECT EXTRACT(YEAR FROM data_ocorrido) AS ano, AVG(quantidade_recursos) AS medi
 FROM recursos_ataques_base
 GROUP BY ano;
 
--- Objetivo 3: Filtrar somente ataques onde a origem dos recursos seja o território de Val’Nareth. (Level 3)
+-- Objetivo 3: Filtrar somente ataques onde a origem dos recursos seja o território de Val Nareth. (Level 3)
 SELECT *
 FROM ataques_origem_recurso
-WHERE territorio_origem_recurso = 'Val’Nareth';
+WHERE territorio_origem_recurso = 'Val Nareth';
 
 -- Objetivo 4: Identificar aliados políticos e militares do Senhor da Torre. (Level 4)
 SELECT
@@ -148,7 +148,7 @@ FROM Pessoa p1
 JOIN Torres_Magicas tm ON p1.id = tm.id_senhor_da_torre
 JOIN aliancas_raw al ON p1.id = al.id_personagem1
 JOIN Pessoa p2 ON al.id_personagem2 = p2.id
-WHERE tm.nome = 'Torre Mágica de Val’Nareth';
+WHERE tm.nome = 'Torre Mágica de Val Nareth';
 
 -- Objetivo 5: Gerar ranking de territórios mais afetados desde o surgimento do Sem Nome. (Level 4)
 SELECT
@@ -164,15 +164,15 @@ ORDER BY total_ataques DESC;
 -- CAPÍTULO 5: O HEXADECIMAL E O GRIMÓRIO [NÍVEL MÁXIMO: 4]
 -- =====================================================================
 
--- Objetivo 1: Localizar registros em hexadecimal ligados à Torre Mágica de Val’Nareth. (Level 4)
+-- Objetivo 1: Localizar registros em hexadecimal ligados à Torre Mágica de Val Nareth. (Level 4)
 SELECT conteudo_hex
 FROM registros_hex_raw
-WHERE nome_torre = 'Torre Mágica de Val’Nareth';
+WHERE nome_torre = 'Torre Mágica de Val Nareth';
 
 -- Objetivo 2: Decodificar a informação para extrair o atributo torremagoValNareth. (Level 4)
 SELECT ENCODE(DECODE(conteudo_hex, 'hex'), 'escape') AS informacao_decodificada
 FROM registros_hex_raw
-WHERE nome_torre = 'Torre Mágica de Val’Nareth';
+WHERE nome_torre = 'Torre Mágica de Val Nareth';
 
 -- Objetivo 3: Verificar todas as ordens emitidas pelo líder dos Justiceiros contendo esse atributo. (Level 4)
 SELECT *
@@ -181,7 +181,7 @@ WHERE id_emissor = (SELECT id FROM Pessoa WHERE nome = 'Líder dos Justiceiros')
 AND conteudo_ordem LIKE '%' || (
     SELECT ENCODE(DECODE(conteudo_hex, 'hex'), 'escape')
     FROM registros_hex_raw
-    WHERE nome_torre = 'Torre Mágica de Val’Nareth'
+    WHERE nome_torre = 'Torre Mágica de Val Nareth'
     LIMIT 1
 ) || '%';
 

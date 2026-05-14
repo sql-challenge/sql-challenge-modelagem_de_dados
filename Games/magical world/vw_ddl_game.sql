@@ -107,7 +107,7 @@ CREATE OR REPLACE VIEW recursos_ataques_base AS
 SELECT data_ocorrido, id_territorio, quantidade_recursos
 FROM Ataques;
 
--- Objetivo 3: Origem dos recursos de Val’Nareth.
+-- Objetivo 3: Origem dos recursos de Val Nareth.
 CREATE OR REPLACE VIEW ataques_origem_recurso AS
 SELECT a.data_ocorrido, a.recurso_principal_usado, f.familiaFeudal AS territorio_origem_recurso
 FROM Ataques a
@@ -123,7 +123,7 @@ FROM Aliados_Politicos;
 -- Foco: Level 4
 -- =====================================================================
 
--- Objetivo 1, 2: Registros em hexadecimal ligados à Torre Mágica de Val’Nareth.
+-- Objetivo 1, 2: Registros em hexadecimal ligados à Torre Mágica de Val Nareth.
 CREATE OR REPLACE VIEW registros_hex_raw AS
 SELECT rs.conteudo_hex, tm.nome AS nome_torre
 FROM Registros_Secretos rs
