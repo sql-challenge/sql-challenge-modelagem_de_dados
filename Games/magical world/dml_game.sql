@@ -93,5 +93,5 @@ INSERT INTO Registros_Secretos (id, id_torre, conteudo_hex) VALUES
 INSERT INTO Grimorio_Primordial (id_localizacao, conteudo, id_pista) VALUES
 (1, 'O Grimório Primordial revela que a pandemia de fótons mágicos não foi um acidente, mas um ato deliberado dos próprios Arquimagos. Eles buscavam criar uma sociedade mágica mais resiliente, mas o experimento falhou, resultando na fragmentação das raças. O Sem Nome descobriu esta verdade e a usa para manipular os Justiceiros, prometendo restaurar a "pureza" mágica.', 1);
 
-INSERT INTO vw_Pistas_Decifradas (id_pista, descricao) VALUES
+INSERT INTO Pistas_Decifradas (id_pista, descricao) VALUES
 (1, 'A pista final decodificada aponta para a Torre Mágica de Val Nareth e o atributo chave "torremagoValNareth".');

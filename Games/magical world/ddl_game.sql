@@ -3,7 +3,7 @@ SET client_encoding = 'UTF8';
 CREATE SCHEMA IF NOT EXISTS magical_world;
 SET search_path TO magical_world;
 
-DROP TABLE IF EXISTS vw_Pistas_Decifradas CASCADE;
+DROP TABLE IF EXISTS Pistas_Decifradas CASCADE;
 DROP TABLE IF EXISTS Grimorio_Primordial CASCADE;
 DROP TABLE IF EXISTS Posse_Artefatos CASCADE;
 DROP TABLE IF EXISTS Ordens_Emitidas CASCADE;
@@ -136,7 +136,7 @@ CREATE TABLE Grimorio_Primordial (
     id_pista BIGINT
 );
 
-CREATE TABLE vw_Pistas_Decifradas (
+CREATE TABLE Pistas_Decifradas (
     id_pista BIGINT PRIMARY KEY,
     descricao TEXT
 );
