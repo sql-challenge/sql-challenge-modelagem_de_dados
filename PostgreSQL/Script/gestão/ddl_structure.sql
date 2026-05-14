@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS Objetivo (
     id_capitulo BIGINT NOT NULL,
     descricao VARCHAR NOT NULL,
     ordem INT NOT NULL DEFAULT 0,
+    nivel INT NOT NULL DEFAULT 0,
     FOREIGN KEY (id_capitulo) REFERENCES Capitulo(id) ON DELETE CASCADE
 );
 
@@ -57,6 +58,7 @@ CREATE TABLE IF NOT EXISTS Dica (
 CREATE TABLE IF NOT EXISTS Visao (
     id BIGSERIAL PRIMARY KEY,
     id_capitulo BIGINT NOT NULL,
+    comando VARCHAR(255) NOT NULL,
     FOREIGN KEY (id_capitulo) REFERENCES Capitulo(id) ON DELETE CASCADE
 );
 
@@ -108,6 +110,8 @@ CREATE TABLE IF NOT EXISTS Visao_DadoExemplo (
 CREATE TABLE IF NOT EXISTS Consulta (
     id BIGSERIAL PRIMARY KEY,
     id_capitulo BIGINT NOT NULL,
+    id_objetivo BIGINT REFERENCES Objetivo(id) ON DELETE CASCADE,
+    query TEXT NOT NULL,
     colunas VARCHAR[] NOT NULL,
     resultado JSONB NOT NULL, -- Expected table, array of objects!
     FOREIGN KEY (id_capitulo) REFERENCES Capitulo(id) ON DELETE CASCADE
@@ -121,8 +125,8 @@ CREATE TABLE IF NOT EXISTS Log (
     id SERIAL PRIMARY KEY,
     table_name VARCHAR(255) NOT NULL,
     operation VARCHAR(10) NOT NULL,
-    old_data TEXT,
-    new_data TEXT,
+    old_data JSONB,
+    new_data JSONB,
     changed_by VARCHAR(255) NOT NULL,
     changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -133,15 +137,15 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF (TG_OP = 'DELETE') THEN
         INSERT INTO Log (table_name, operation, old_data, changed_by)
-        VALUES (TG_TABLE_NAME, 'DELETE', OLD::text, current_user);
+        VALUES (TG_TABLE_NAME, 'DELETE', to_jsonb(OLD), current_user);
         RETURN OLD;
     ELSIF (TG_OP = 'UPDATE') THEN
         INSERT INTO Log (table_name, operation, old_data, new_data, changed_by)
-        VALUES (TG_TABLE_NAME, 'UPDATE', OLD::text, NEW::text, current_user);
+        VALUES (TG_TABLE_NAME, 'UPDATE', to_jsonb(OLD), to_jsonb(NEW), current_user);
         RETURN NEW;
     ELSIF (TG_OP = 'INSERT') THEN
         INSERT INTO Log (table_name, operation, new_data, changed_by)
-        VALUES (TG_TABLE_NAME, 'INSERT', NEW::text, current_user);
+        VALUES (TG_TABLE_NAME, 'INSERT', to_jsonb(NEW), current_user);
         RETURN NEW;
     END IF;
     RETURN NULL;
