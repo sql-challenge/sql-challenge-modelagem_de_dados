@@ -267,42 +267,42 @@ INSERT INTO Dica (id, id_capitulo, ordem, conteudo, penalidade_xp) VALUES
 INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
 (1, 1, 1,
  'SELECT * FROM regioes_reinos;',
- '["nome_reino", "geografia"]'::jsonb,
+ ARRAY['nome_reino', 'geografia'],
  NULL);
 
 -- Obj 2 (nivel 0): SELECT * simples
 INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
 (2, 1, 2,
  'SELECT * FROM especies_governantes;',
- '["especie_governante"]'::jsonb,
+ ARRAY['especie_governante'],
  NULL);
 
 -- Obj 3 (nivel 0): SELECT * simples
 INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
 (3, 1, 3,
  'SELECT * FROM senhores_das_terras;',
- '["nome_senhor", "sobrenome_senhor", "territorio_governado"]'::jsonb,
+ ARRAY['nome_senhor', 'sobrenome_senhor', 'territorio_governado'],
  NULL);
 
 -- Obj 4 (nivel 1): WHERE simples
 INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
 (4, 1, 4,
  'SELECT * FROM artefatos_por_territorio WHERE categoria = ''L'';',
- '["nome_artefato", "categoria", "territorio_localizacao"]'::jsonb,
+ ARRAY['nome_artefato', 'categoria', 'territorio_localizacao'],
  NULL);
 
 -- Obj 5 (nivel 1): WHERE com OR
 INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
 (5, 1, 5,
  'SELECT * FROM regioes_reinos WHERE geografia = ''N'' OR geografia = ''S'';',
- '["nome_reino", "geografia"]'::jsonb,
+ ARRAY['nome_reino', 'geografia'],
  NULL);
 
 -- Obj 6 (nivel 2): ORDER BY + LIMIT
 INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
 (6, 1, 6,
  'SELECT * FROM pessoas_vivas ORDER BY nascimento ASC LIMIT 1;',
- '["nome", "sobreNome", "nascimento", "óbito"]'::jsonb,
+ ARRAY['nome', 'sobreNome', 'nascimento', 'óbito'],
  NULL);
 
 -- ─── CAPÍTULO 2: Level 1 → 2 → 3 ────────────────────────────────────────────
@@ -311,7 +311,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
 INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
 (7, 2, 7,
  'SELECT * FROM ataques_raw WHERE autor = ''Os Justiceiros'';',
- '["data_ocorrido", "autor", "id_territorio"]'::jsonb,
+ ARRAY['data_ocorrido', 'autor', 'id_territorio'],
  NULL);
 
 -- Obj 8 (nivel 2): GROUP BY + COUNT
@@ -321,7 +321,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'FROM ataques_detalhe '
  'GROUP BY territorio_atacado '
  'ORDER BY total_ataques DESC;',
- '["territorio_atacado", "total_ataques"]'::jsonb,
+ ARRAY['territorio_atacado', 'total_ataques'],
  NULL);
 
 -- Obj 9 (nivel 2): GROUP BY + COUNT em outra dimensão
@@ -331,7 +331,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'FROM ataques_raw '
  'GROUP BY autor '
  'ORDER BY total_ataques DESC;',
- '["autor", "total_ataques"]'::jsonb,
+ ARRAY['autor', 'total_ataques'],
  NULL);
 
 -- Obj 10 (nivel 3): Primeiro JOIN — autor + território na mesma linha
@@ -341,7 +341,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'FROM ataques_raw ar '
  'JOIN ataques_detalhe ad ON ar.data_ocorrido = ad.data_ocorrido '
  'WHERE ar.autor = ''Os Justiceiros'';',
- '["data_ocorrido", "autor", "territorio_atacado"]'::jsonb,
+ ARRAY['data_ocorrido', 'autor', 'territorio_atacado'],
  NULL);
 
 -- Obj 11 (nivel 3): JOIN + GROUP BY — espécies suspeitas por território atacado
@@ -352,7 +352,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'JOIN ataques_detalhe ad ON vs.territorio_associado = ad.territorio_atacado '
  'GROUP BY vs.especie_associada, vs.territorio_associado '
  'ORDER BY total_ataques DESC;',
- '["especie_associada", "territorio_associado", "total_ataques"]'::jsonb,
+ ARRAY['especie_associada', 'territorio_associado', 'total_ataques'],
  NULL);
 
 -- ─── CAPÍTULO 3: Level 3 → 4 ─────────────────────────────────────────────────
@@ -363,7 +363,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'SELECT pa.nome_artefato, pa.categoria, m.recurso_principal '
  'FROM posse_artefatos_base pa '
  'JOIN mineracao_base m ON pa.id_personagem_portador = m.id_pessoa;',
- '["nome_artefato", "categoria", "recurso_principal"]'::jsonb,
+ ARRAY['nome_artefato', 'categoria', 'recurso_principal'],
  NULL);
 
 -- Obj 13 (nivel 3): JOIN transações + ataques por território de destino
@@ -373,7 +373,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'FROM transacoes_base tb '
  'JOIN recursos_ataques_base rab ON tb.id_territorio_destino = rab.id_territorio '
  'WHERE tb.recurso = ''pedras flamejantes'';',
- '["recurso", "id_territorio_origem", "id_territorio_destino", "quantidade_recursos"]'::jsonb,
+ ARRAY['recurso', 'id_territorio_origem', 'id_territorio_destino', 'quantidade_recursos'],
  NULL);
 
 -- Obj 14 (nivel 3): JOIN ordens da Torre + ataques no mesmo território
@@ -382,7 +382,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'SELECT otb.descricao_ordem, otb.data_emissao, rab.data_ocorrido, rab.quantidade_recursos '
  'FROM ordens_torre_base otb '
  'JOIN recursos_ataques_base rab ON otb.id_territorio_alvo = rab.id_territorio;',
- '["descricao_ordem", "data_emissao", "data_ocorrido", "quantidade_recursos"]'::jsonb,
+ ARRAY['descricao_ordem', 'data_emissao', 'data_ocorrido', 'quantidade_recursos'],
  NULL);
 
 -- Obj 15 (nivel 3): JOIN mineração + transações pelo autorizador
@@ -392,7 +392,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'FROM mineracao_base m '
  'JOIN transacoes_base tb ON m.id_pessoa = tb.id_senhor_autorizador '
  'WHERE m.recurso_principal = ''pedras flamejantes'';',
- '["id_mina", "recurso_principal", "recurso_transacao"]'::jsonb,
+ ARRAY['id_mina', 'recurso_principal', 'recurso_transacao'],
  NULL);
 
 -- Obj 16 (nivel 4): JOIN + GROUP BY — total de ataques e recursos por território receptor
@@ -405,7 +405,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'JOIN recursos_ataques_base rab ON tb.id_territorio_destino = rab.id_territorio '
  'GROUP BY tb.id_territorio_destino '
  'ORDER BY total_ataques DESC;',
- '["id_territorio_destino", "total_ataques", "total_recursos"]'::jsonb,
+ ARRAY['id_territorio_destino', 'total_ataques', 'total_recursos'],
  NULL);
 
 -- ─── CAPÍTULO 4: Level 4 ──────────────────────────────────────────────────────
@@ -420,7 +420,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  '  SELECT AVG(quantidade_recursos) FROM recursos_ataques_base'
  ') '
  'ORDER BY rab.quantidade_recursos DESC;',
- '["descricao_ordem", "data_emissao", "data_ocorrido", "quantidade_recursos"]'::jsonb,
+ ARRAY['descricao_ordem', 'data_emissao', 'data_ocorrido', 'quantidade_recursos'],
  NULL);
 
 -- Obj 18 (nivel 4): JOIN + GROUP BY — total de ataques e recursos por território de origem
@@ -433,7 +433,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'JOIN recursos_ataques_base rab ON aor.data_ocorrido = rab.data_ocorrido '
  'GROUP BY aor.territorio_origem_recurso '
  'ORDER BY total_ataques DESC;',
- '["territorio_origem_recurso", "total_ataques", "total_recursos"]'::jsonb,
+ ARRAY['territorio_origem_recurso', 'total_ataques', 'total_recursos'],
  NULL);
 
 -- Obj 19 (nivel 4): JOIN + WHERE com LIKE — origem dos recursos que contém "Val"
@@ -443,7 +443,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'FROM ataques_origem_recurso aor '
  'JOIN recursos_ataques_base rab ON aor.data_ocorrido = rab.data_ocorrido '
  'WHERE aor.territorio_origem_recurso LIKE ''%Val%'';',
- '["territorio_origem_recurso", "recurso_principal_usado", "quantidade_recursos"]'::jsonb,
+ ARRAY['territorio_origem_recurso', 'recurso_principal_usado', 'quantidade_recursos'],
  NULL);
 
 -- Obj 20 (nivel 4): GROUP BY + subquery — personagem com mais alianças
@@ -457,7 +457,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  '    SELECT COUNT(id_personagem2) AS cnt FROM aliancas_raw GROUP BY id_personagem1'
  '  ) sub'
  ');',
- '["id_personagem1", "total_aliados"]'::jsonb,
+ ARRAY['id_personagem1', 'total_aliados'],
  NULL);
 
 -- Obj 21 (nivel 4): JOIN 2 tabelas + GROUP BY — ataques e recursos por torre
@@ -470,7 +470,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'JOIN recursos_ataques_base rab ON otb.id_territorio_alvo = rab.id_territorio '
  'GROUP BY otb.id_torre '
  'ORDER BY total_ataques DESC;',
- '["id_torre", "total_ataques", "total_recursos"]'::jsonb,
+ ARRAY['id_torre', 'total_ataques', 'total_recursos'],
  NULL);
 
 -- ─── CAPÍTULO 5: Funções avançadas e subconsultas ─────────────────────────────
@@ -480,14 +480,14 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
 (22, 5, 22,
  'SELECT * FROM registros_hex_raw '
  'WHERE nome_torre = ''Torre Mágica de Val Nareth'';',
- '["conteudo_hex", "nome_torre"]'::jsonb,
+ ARRAY['conteudo_hex', 'nome_torre'],
  NULL);
 
 -- Obj 23 (nivel 0): Explorar todos os registros secretos
 INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
 (23, 5, 23,
  'SELECT * FROM registros_hex_raw;',
- '["conteudo_hex", "nome_torre"]'::jsonb,
+ ARRAY['conteudo_hex', 'nome_torre'],
  NULL);
 
 -- Obj 24 (nivel 3): JOIN ordens emitidas + portadores de artefatos
@@ -496,7 +496,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'SELECT oer.conteudo_ordem, pac.nome_portador, pac.nome_artefato '
  'FROM ordens_emitidas_raw oer '
  'JOIN posse_artefato_personagem pac ON oer.id_emissor = pac.id_artefato;',
- '["conteudo_ordem", "nome_portador", "nome_artefato"]'::jsonb,
+ ARRAY['conteudo_ordem', 'nome_portador', 'nome_artefato'],
  NULL);
 
 -- Obj 25 (nivel 3): Portador atual do Cajado do Coração de Fogo
@@ -504,12 +504,12 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
 (25, 5, 25,
  'SELECT * FROM posse_artefato_personagem '
  'WHERE nome_artefato = ''Cajado do Coração de Fogo'';',
- '["id_artefato", "nome_portador", "sobrenome_portador", "nome_artefato"]'::jsonb,
+ ARRAY['id_artefato', 'nome_portador', 'sobrenome_portador', 'nome_artefato'],
  NULL);
 
 -- Obj 26 (nivel 0): Revelar o Grimório Primordial
 INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
 (26, 5, 26,
  'SELECT * FROM grimorio_final;',
- '["conteudo"]'::jsonb,
+ ARRAY['conteudo'],
  NULL);

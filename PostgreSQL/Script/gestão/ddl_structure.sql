@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS Consulta (
     id_objetivo BIGINT REFERENCES Objetivo(id) ON DELETE CASCADE,
     query TEXT NOT NULL,
     colunas VARCHAR[] NOT NULL,
-    resultado JSONB NOT NULL, -- Expected table, array of objects!
+    resultado JSONB, -- Expected table, array of objects!
     FOREIGN KEY (id_capitulo) REFERENCES Capitulo(id) ON DELETE CASCADE
 );
 
