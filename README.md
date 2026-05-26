@@ -58,17 +58,20 @@ Se o container já estiver rodando, execute os scripts na ordem abaixo:
 docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
   < /caminho/para/ddl_structure.sql
 
-# 2. DDL do mundo mágico
+# 2. DDL do mundo mágico (requer SET search_path)
 docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  < /caminho/para/ddl_game.sql
+  -c "SET search_path TO magical_world;" \
+  -f <(cat /caminho/para/ddl_game.sql)
 
-# 3. Dados do mundo mágico
+# 3. Dados do mundo mágico (requer SET search_path)
 docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  < /caminho/para/dml_game.sql
+  -c "SET search_path TO magical_world;" \
+  -f <(cat /caminho/para/dml_game.sql)
 
-# 4. Views do jogo
+# 4. Views do jogo (requer SET search_path)
 docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  < /caminho/para/vw_ddl_game.sql
+  -c "SET search_path TO magical_world;" \
+  -f <(cat /caminho/para/vw_ddl_game.sql)
 
 # 5. Conteúdo do jogo (desafios, objetivos, consultas, dicas)
 docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
@@ -78,6 +81,8 @@ docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
 docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
   < /caminho/para/dcl_security.sql
 ```
+
+> ⚠️ Os passos 2, 3 e 4 (arquivos `ddl_game.sql`, `dml_game.sql`, `vw_ddl_game.sql`) criam objetos no schema `magical_world`. Sem `SET search_path TO magical_world;` antes do `-f`, as tabelas e views serão criadas no schema `public` por padrão, e as consultas do jogo não encontrarão os dados.
 
 ## Atualização rápida (só conteúdo do jogo)
 
