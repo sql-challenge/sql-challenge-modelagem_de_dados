@@ -1,3 +1,5 @@
+SET search_path TO magical_world;
+
 -- Tabela Feudo (id, familiaFeudal, geografia)
 INSERT INTO Feudo (id, familiaFeudal, geografia) VALUES
 (1, 'Centauros de Val Nareth', 'N'),
