@@ -1,5 +1,7 @@
 # sql-challenge-modelagem_de_dados
 
+> ⚠️ **Importante**: Os arquivos `ddl_game.sql`, `dml_game.sql` e `vw_ddl_game.sql` já incluem `SET search_path TO magical_world;`. Se for executá-los manualmente **fora** da ordem abaixo, certifique-se de que o schema `magical_world` existe e o `search_path` está configurado.
+
 Modelagem de dados e conteúdo do jogo **SQL Challenge — Mistério do Mundo Mágico**.
 
 ## Estrutura
@@ -58,20 +60,17 @@ Se o container já estiver rodando, execute os scripts na ordem abaixo:
 docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
   < /caminho/para/ddl_structure.sql
 
-# 2. DDL do mundo mágico (requer SET search_path)
+# 2. DDL do mundo mágico (já contém SET search_path)
 docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  -c "SET search_path TO magical_world;" \
-  -f <(cat /caminho/para/ddl_game.sql)
+  -f /caminho/para/ddl_game.sql
 
-# 3. Dados do mundo mágico (requer SET search_path)
+# 3. Dados do mundo mágico (já contém SET search_path)
 docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  -c "SET search_path TO magical_world;" \
-  -f <(cat /caminho/para/dml_game.sql)
+  -f /caminho/para/dml_game.sql
 
-# 4. Views do jogo (requer SET search_path)
+# 4. Views do jogo (já contém SET search_path)
 docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  -c "SET search_path TO magical_world;" \
-  -f <(cat /caminho/para/vw_ddl_game.sql)
+  -f /caminho/para/vw_ddl_game.sql
 
 # 5. Conteúdo do jogo (desafios, objetivos, consultas, dicas)
 docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
