@@ -1,111 +1,98 @@
 # sql-challenge-modelagem_de_dados
 
-> ⚠️ **Importante**: Os arquivos `ddl_game.sql`, `dml_game.sql` e `vw_ddl_game.sql` já incluem `SET search_path TO magical_world;`. Se for executá-los manualmente **fora** da ordem abaixo, certifique-se de que o schema `magical_world` existe e o `search_path` está configurado.
+Modelagem de dados e conteúdo do **SQL Challenge — Mistério do Mundo Mágico**.
 
-Modelagem de dados e conteúdo do jogo **SQL Challenge — Mistério do Mundo Mágico**.
+Este repositório é a **fonte de verdade do banco de dados**: schema de gestão, mundo mágico, views, conteúdo do jogo e o usuário de aplicação. Backend, frontend e k8s consomem estes arquivos — o contrato completo está em [DATABASE.md](./DATABASE.md).
 
 ## Estrutura
 
 ```
-PostgreSQL/Script/
-  gestão/
-    ddl_structure.sql     → DDL das tabelas de gestão (Desafio, Capitulo, Objetivo,
-                            Dica, Visao, Consulta, Log + triggers)
-    dcl_security.sql      → Cria usuário de aplicação (users_sql_challenge)
-  cadastro_games/
-    dml_magical_world.sql → DML do conteúdo do jogo (1 desafio, 5 capítulos,
-                            26 objetivos, 15 dicas, 23 visões, 26 consultas-solução)
+sql/
+  01_gestao_ddl.sql          → DDL das tabelas de gestão (Desafio, Capitulo, Objetivo,
+                               Dica, Visao, Consulta, Log + triggers)
+  02_magical_world_ddl.sql   → DDL do mundo mágico (Feudo, Pessoa, Artefato, Cidade, ...)
+  03_magical_world_dml.sql   → Dados do mundo mágico (8 feudos, pessoas, artefatos...)
+  04_game_views.sql          → Views do jogo (uma por objetivo, 23 views)
+  05_challenge_content.sql   → Conteúdo do jogo (1 desafio, 5 capítulos, 26 objetivos,
+                               15 dicas, 23 visões, 26 consultas-solução)
+  06_security_dcl.sql        → Usuário de aplicação somente-leitura (parametrizado)
 
-Games/magical world/
-  ddl_game.sql            → DDL das tabelas do mundo mágico (Feudo, Pessoa,
-                            Artefato, Cidade, Ataques, Torres, etc.)
-  dml_game.sql            → DML com dados do mundo mágico (8 feudos, pessoas,
-                            artefatos, cidades, transações...)
-  vw_ddl_game.sql         → Views do jogo (uma por objetivo, 23 views:
-                            regioes_reinos, ataques_raw, grimorio_final...)
+uml/
+  UML.png                    → Diagrama relacional (drawSQL)
+  UML_LINK.txt               → Link do diagrama no drawSQL
+  FIREBASE_UML.puml/.png     → Modelagem lógica do Firestore (PlantUML)
 ```
 
-## Como semear o banco
+## Como aplicar
 
-### 1. Via script automatizado (recomendado)
+A ordem é a numeração: `01` → `06`. Todos os arquivos são idempotentes e podem ser reexecutados com segurança.
 
-O backend tem o script `scripts/db-init.sh` que orquestra tudo na ordem correta:
+### Desenvolvimento local (recomendado)
+
+O banco de dev é gerenciado pelo repositório backend:
 
 ```bash
-# A partir da raiz do repositório backend:
 cd ../sql-challenge-backend
 
-# Semeia apenas produção
-bash scripts/db-init.sh --env production
-
-# Semeia apenas staging/teste
-bash scripts/db-init.sh --env staging
-
-# Semeia ambos
-bash scripts/db-init.sh --env all
-
-# Reset total (apaga tudo e recria)
-bash scripts/db-init.sh --env production --reset
+bash scripts/db-dev.sh up       # sobe o db_gestao_dev (porta 5432) e aplica o pipeline
+bash scripts/db-dev.sh reseed   # recria o banco do zero
+bash scripts/db-dev.sh psql     # abre o psql no banco de dev
 ```
 
-O script usa este repositório automaticamente se estiver em `../sql-challenge-modelagem_de_dados`.
-
-### 2. Via docker exec (manual)
-
-Se o container já estiver rodando, execute os scripts na ordem abaixo:
+### Manual (psql)
 
 ```bash
-# Ordem obrigatória:
-# 1. Schema de gestão
-docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  < /caminho/para/ddl_structure.sql
+DB=db_gestao_dev
 
-# 2. DDL do mundo mágico (já contém SET search_path)
-docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  -f /caminho/para/ddl_game.sql
+# Pipeline 01 → 05
+for f in sql/0[1-5]_*.sql; do
+  psql -v ON_ERROR_STOP=1 -d "$DB" -f "$f"
+done
 
-# 3. Dados do mundo mágico (já contém SET search_path)
-docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  -f /caminho/para/dml_game.sql
-
-# 4. Views do jogo (já contém SET search_path)
-docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  -f /caminho/para/vw_ddl_game.sql
-
-# 5. Conteúdo do jogo (desafios, objetivos, consultas, dicas)
-docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  < /caminho/para/dml_magical_world.sql
-
-# 6. Usuário de aplicação (opcional, necessário para queries dos alunos)
-docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  < /caminho/para/dcl_security.sql
+# DCL (usuário de aplicação)
+psql -d "$DB" \
+  -v app_user=users_sql_challenge \
+  -v app_password="$APP_PASSWORD" \
+  -v app_db="$DB" \
+  -f sql/06_security_dcl.sql
 ```
 
-> ⚠️ Os passos 2, 3 e 4 (arquivos `ddl_game.sql`, `dml_game.sql`, `vw_ddl_game.sql`) criam objetos no schema `magical_world`. Sem `SET search_path TO magical_world;` antes do `-f`, as tabelas e views serão criadas no schema `public` por padrão, e as consultas do jogo não encontrarão os dados.
+> ⚠️ `03` e `04` usam `SET search_path TO magical_world` — o schema é criado no `02`.
 
-## Atualização rápida (só conteúdo do jogo)
+### Staging / Produção
 
-Quando apenas os objetivos, consultas ou dicas mudam (sem alterar tabelas ou views):
+No servidor, a semeadura é orquestrada pelo backend:
 
 ```bash
-docker exec -i sql-challenge-db psql -U challenge_user -d db_gestao \
-  < PostgreSQL/Script/cadastro_games/dml_magical_world.sql
+cd ../sql-challenge-backend
+bash scripts/db-init.sh --env production   # ou --env staging
 ```
+
+Em produção a semeadura é **não destrutiva** (`CREATE ... IF NOT EXISTS`). Para recriar do zero use `--reset` (apaga o volume — confirmação obrigatória).
 
 ## Verificação
 
 ```sql
--- Tabelas de gestão
-SELECT 'Desafio',  COUNT(*) FROM Desafio
-UNION ALL SELECT 'Capitulo', COUNT(*) FROM Capitulo
-UNION ALL SELECT 'Objetivo', COUNT(*) FROM Objetivo
-UNION ALL SELECT 'Dica',     COUNT(*) FROM Dica
-UNION ALL SELECT 'Visao',    COUNT(*) FROM Visao
-UNION ALL SELECT 'Consulta', COUNT(*) FROM Consulta;
-
--- Tabelas do mundo mágico
-SELECT 'Feudo',  COUNT(*) FROM magical_world.Feudo
-UNION ALL SELECT 'Pessoa', COUNT(*) FROM magical_world.Pessoa;
+SELECT 'Desafio'  AS tabela, COUNT(*) FROM Desafio
+UNION ALL SELECT 'Capitulo',  COUNT(*) FROM Capitulo
+UNION ALL SELECT 'Objetivo',  COUNT(*) FROM Objetivo
+UNION ALL SELECT 'Dica',      COUNT(*) FROM Dica
+UNION ALL SELECT 'Visao',     COUNT(*) FROM Visao
+UNION ALL SELECT 'Consulta',  COUNT(*) FROM Consulta
+UNION ALL SELECT 'magical_world.Feudo',    COUNT(*) FROM magical_world.Feudo
+UNION ALL SELECT 'magical_world.Pessoa',   COUNT(*) FROM magical_world.Pessoa
+UNION ALL SELECT 'magical_world.Artefato', COUNT(*) FROM magical_world.Artefato;
 ```
 
-Esperado: 1 Desafio, 5 Capítulos, 26 Objetivos, 15 Dicas, 23 Visões, 26 Consultas.
+Esperado: **1 Desafio · 5 Capítulos · 26 Objetivos · 15 Dicas · 23 Visões · 26 Consultas** · 8 Feudos.
+
+## Documentação
+
+| Arquivo | Conteúdo |
+|---------|----------|
+| [DATABASE.md](./DATABASE.md) | Contrato do pipeline: ordem, ambientes, DCL, convenções para repositórios dependentes |
+| [REVIEW.md](./REVIEW.md) | Auditoria de bootstrap/segurança (2026-10) e decisões tomadas |
+
+## Licença
+
+MIT — veja [LICENSE](./LICENSE).
