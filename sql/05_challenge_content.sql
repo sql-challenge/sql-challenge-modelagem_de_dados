@@ -1,7 +1,7 @@
 -- ============================================================
 -- DML - Mundo Mágico
 -- Popula o banco db_gestao com o conteúdo do jogo.
--- Execute APÓS o ddl_structure.sql estar aplicado.
+-- Execute APÓS o 01_gestao_ddl.sql estar aplicado.
 -- Data: 2026-03-22
 -- ============================================================
 
