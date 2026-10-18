@@ -485,7 +485,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
 (24, 5, 24,
  'SELECT oer.conteudo_ordem, pac.nome_portador, pac.nome_artefato '
  'FROM ordens_emitidas_raw oer '
- 'JOIN posse_artefato_personagem pac ON oer.id_emissor = pac.id_artefato;',
+ 'JOIN posse_artefato_personagem pac ON oer.id_emissor = pac.id_personagem_portador;',
  ARRAY['conteudo_ordem', 'nome_portador', 'nome_artefato'],
  NULL);
 

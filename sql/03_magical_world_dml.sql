@@ -29,6 +29,14 @@ INSERT INTO Artefato (id, nome, categoria, id_proprietário) VALUES
 (1003, 'Poção de Cura', 'C', 105),
 (1004, 'Mapa Antigo', 'C', 104);
 
+-- Tabela Posse_Artefatos (portador atual de cada artefato)
+INSERT INTO Posse_Artefatos (id, id_artefato, id_personagem_portador, data_posse) VALUES
+(1, 1000, 100, '0540-03-15'),  -- Cajado do Coração de Fogo → O Sem Nome
+(2, 1001, 101, '0539-09-20'),  -- Arca do Grimório Primordial → Líder dos Justiceiros
+(3, 1002, 102, '0539-05-10'),  -- Pedra Filosofal → Ferdinando I
+(4, 1003, 105, '0540-01-05'),  -- Poção de Cura → Guardião Chefe
+(5, 1004, 104, '0538-12-01');  -- Mapa Antigo → Senhor Elfo
+
 -- Tabela AcademiaMagica 
 INSERT INTO AcademiaMagica (id, nome, qtd_matriculas, id_diretor) VALUES
 (10, 'Academia Central de Magia', 500, 105);
@@ -66,7 +74,7 @@ INSERT INTO Ataques (id, data_ocorrido, autor, id_territorio, nivel_impacto, rec
 
 -- Tabela Transacoes_Comerciais 
 INSERT INTO Transacoes_Comerciais (id, id_territorio_origem, id_territorio_destino, recurso, data_transacao, id_senhor_autorizador) VALUES
-(1, 3, 2, 'pedras flamejantes', '0539-10-15', 104),
+(1, 3, 8, 'pedras flamejantes', '0539-10-15', 104),
 (2, 5, 8, 'minério de dragão', '0540-01-01', 102),
 (3, 1, 8, 'cristal mágico', '0540-02-01', 100);
 

@@ -137,7 +137,7 @@ FROM Ordens_Emitidas;
 
 -- Objetivo 4: Posse atual do Cajado do Coração de Fogo.
 CREATE OR REPLACE VIEW posse_artefato_personagem AS
-SELECT pa.id_artefato, p.nome AS nome_portador, p.sobreNome AS sobrenome_portador, a.nome AS nome_artefato
+SELECT pa.id_artefato, pa.id_personagem_portador, p.nome AS nome_portador, p.sobreNome AS sobrenome_portador, a.nome AS nome_artefato
 FROM Posse_Artefatos pa
 JOIN Pessoa p ON pa.id_personagem_portador = p.id
 JOIN Artefato a ON pa.id_artefato = a.id;
