@@ -76,7 +76,7 @@ INSERT INTO Capitulo (id, id_desafio, numero, intro_historia, contexto_historia,
 -- ============================================================
 -- VISÕES DISPONÍVEIS POR CAPÍTULO
 -- Cada VIEW pertence ao capítulo onde é introduzida pela primeira vez.
--- O campo 'comando' é o nome da VIEW no banco do jogo (db_game).
+-- O campo 'comando' é o nome da VIEW em db_gestao, schema magical_world.
 -- ============================================================
 INSERT INTO Visao (id, id_capitulo, comando) VALUES
 -- Capítulo 1: mapeamento do mundo
@@ -329,7 +329,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
 (10, 2, 10,
  'SELECT ar.autor, ad.territorio_atacado '
  'FROM ataques_raw ar '
- 'JOIN ataques_detalhe ad ON ar.data_ocorrido = ad.data_ocorrido '
+ 'JOIN ataques_detalhe ad ON ar.id = ad.id '
  'WHERE ar.autor = ''Os Justiceiros'';',
  ARRAY['autor', 'territorio_atacado'],
  NULL);
@@ -420,7 +420,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
  'COUNT(*) AS total_ataques, '
  'SUM(rab.quantidade_recursos) AS total_recursos '
  'FROM ataques_origem_recurso aor '
- 'JOIN recursos_ataques_base rab ON aor.data_ocorrido = rab.data_ocorrido '
+ 'JOIN recursos_ataques_base rab ON aor.id = rab.id '
  'GROUP BY aor.territorio_origem_recurso '
  'ORDER BY total_ataques DESC;',
  ARRAY['territorio_origem_recurso', 'total_ataques', 'total_recursos'],
@@ -431,7 +431,7 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
 (19, 4, 19,
  'SELECT aor.territorio_origem_recurso, aor.recurso_principal_usado, rab.quantidade_recursos '
  'FROM ataques_origem_recurso aor '
- 'JOIN recursos_ataques_base rab ON aor.data_ocorrido = rab.data_ocorrido '
+ 'JOIN recursos_ataques_base rab ON aor.id = rab.id '
  'WHERE aor.territorio_origem_recurso LIKE ''%Val%'';',
  ARRAY['territorio_origem_recurso', 'recurso_principal_usado', 'quantidade_recursos'],
  NULL);

@@ -44,15 +44,19 @@ FROM Pessoa;
 -- =====================================================================
 
 -- Objetivo 1: Localizar todos os registros de ataques atribuídos aos Justiceiros.
+-- `id` incluído para permitir JOIN estável entre as views: usar data_ocorrido
+-- como chave multiplica linhas quando dois ataques caem na mesma data.
 CREATE OR REPLACE VIEW ataques_raw AS
-SELECT data_ocorrido, autor, id_territorio
+SELECT id, data_ocorrido, autor, id_territorio
 FROM Ataques;
 
 -- Objetivo 2, 3, 4: Agrupar e filtrar ataques por território/data.
+-- `autor` exposto para o jogador reconciliar ataques_raw × ataques_detalhe.
 CREATE OR REPLACE VIEW ataques_detalhe AS
 SELECT
     a.id,
     a.data_ocorrido,
+    a.autor,
     f.familiaFeudal AS territorio_atacado
 FROM Ataques a
 JOIN Feudo f ON a.id_territorio = f.id
@@ -103,13 +107,15 @@ SELECT id_ordem, id_torre, data_emissao, id_territorio_alvo, descricao_ordem
 FROM Ordens_Torre_Magica;
 
 -- Objetivo 2, 5: Recursos usados em ataques e territórios afetados.
+-- `id` exposto para cruzar com ataques_origem_recurso por chave estável.
 CREATE OR REPLACE VIEW recursos_ataques_base AS
-SELECT data_ocorrido, id_territorio, quantidade_recursos
+SELECT id, data_ocorrido, id_territorio, quantidade_recursos
 FROM Ataques;
 
 -- Objetivo 3: Origem dos recursos de Val Nareth.
+-- `id` exposto para cruzar com recursos_ataques_base por chave estável.
 CREATE OR REPLACE VIEW ataques_origem_recurso AS
-SELECT a.data_ocorrido, a.recurso_principal_usado, f.familiaFeudal AS territorio_origem_recurso
+SELECT a.id, a.data_ocorrido, a.recurso_principal_usado, f.familiaFeudal AS territorio_origem_recurso
 FROM Ataques a
 JOIN Feudo f ON a.id_territorio = f.id; -- Assumindo que id_territorio é o local do ataque, e o recurso vem de lá.
 

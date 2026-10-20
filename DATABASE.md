@@ -14,12 +14,14 @@ Os arquivos em `sql/` são executados em **ordem lexical** — a numeração é 
 | 04 | `04_game_views.sql` | Views do jogo (uma por objetivo; 23 views) | 02, 03 |
 | 05 | `05_challenge_content.sql` | Conteúdo do jogo: desafio, capítulos, objetivos, dicas, visões, consultas-solução | 01, 04 |
 | 06 | `06_security_dcl.sql` | Usuário de aplicação somente-leitura + grants (parametrizado) | 01, 02 |
+| 07 | `07_qa_checks.sql` | Verificações somente leitura: views existentes/não vazias, objetivos com consulta, consultas executáveis com as colunas esperadas, consistência raw × detalhe | 01, 04, 05 |
 
 Propriedades:
 
 - **`01` e `02` são aditivos** (`CREATE ... IF NOT EXISTS`) — nunca destroem dados em bootstrap normal.
 - **`05` limpa as tabelas de conteúdo antes de reinserir** — recarga segura e repetível.
 - **`06` é idempotente** e recebe parâmetros via `psql -v` (ver seção 4).
+- **`07` é somente leitura** e não altera dados: reporta problemas como `WARNING` no stderr.
 - O bootstrap **não** usa `DROP TABLE`/`DROP DATABASE`. Ponto de partida limpo = volume novo (dev/staging) ou `--reset` (servidor).
 
 ## 2. Ambientes
@@ -108,7 +110,7 @@ O script:
 1. **Numeração = ordem.** Qualquer arquivo novo segue `NN_nome.sql` e roda em ordem lexical.
 2. **Bootstrap é aditivo.** Nunca inclua `DROP` em bootstrap normal; recriação é responsabilidade do volume/reset.
 3. **Mudança de conteúdo** (`05`): edite o arquivo; ele recarrega as tabelas de conteúdo.
-4. **Mudança de schema**: novo arquivo numerado (`07_...`), aditivo (`CREATE IF NOT EXISTS` / `ALTER`). Mudanças destrutivas exigem migração coordenada com o deploy da aplicação.
+4. **Mudança de schema**: novo arquivo numerado (`08_...`), aditivo (`CREATE IF NOT EXISTS` / `ALTER`). Mudanças destrutivas exigem migração coordenada com o deploy da aplicação.
 5. **Caminhos são ASCII** (sem acentos/espaços) e relativos à raiz do repositório.
 6. **Externos**:
    - `backend/scripts/db-init.sh` (staging/produção) e `backend/scripts/db-dev.sh` (dev) executam o pipeline.

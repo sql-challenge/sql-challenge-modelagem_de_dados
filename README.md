@@ -16,6 +16,7 @@ sql/
   05_challenge_content.sql   → Conteúdo do jogo (1 desafio, 5 capítulos, 26 objetivos,
                                15 dicas, 23 visões, 26 consultas-solução)
   06_security_dcl.sql        → Usuário de aplicação somente-leitura (parametrizado)
+  07_qa_checks.sql           → Verificações de integridade e solubilidade (somente leitura)
 
 uml/
   UML.png                    → Diagrama relacional (drawSQL)
@@ -25,7 +26,8 @@ uml/
 
 ## Como aplicar
 
-A ordem é a numeração: `01` → `06`. Todos os arquivos são idempotentes e podem ser reexecutados com segurança.
+A ordem é a numeração: `01` → `07`. Todos os arquivos são idempotentes e podem ser reexecutados com segurança
+(`07` é somente leitura).
 
 ### Desenvolvimento local (recomendado)
 
@@ -48,6 +50,9 @@ DB=db_gestao_dev
 for f in sql/0[1-5]_*.sql; do
   psql -v ON_ERROR_STOP=1 -d "$DB" -f "$f"
 done
+
+# Verificações de integridade/solubilidade (somente leitura; warnings no stderr)
+psql -d "$DB" -f sql/07_qa_checks.sql
 
 # DCL (usuário de aplicação)
 psql -d "$DB" \
