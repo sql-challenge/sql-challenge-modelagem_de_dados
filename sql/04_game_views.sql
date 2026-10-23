@@ -7,8 +7,10 @@ SET search_path TO magical_world;
 -- =====================================================================
 
 -- Objetivo 1: Identificar todas as regiões e reinos do mundo mágico.
+-- `id` exposto para que o jogador consiga correlacionar ids de território
+-- usados nos capítulos seguintes (ex.: Ataques.id_territorio) com o reino.
 CREATE OR REPLACE VIEW regioes_reinos AS
-SELECT familiaFeudal AS nome_reino, geografia
+SELECT familiaFeudal AS nome_reino, geografia, id
 FROM Feudo;
 
 -- Objetivo 2: Listar as espécies que governam cada território.
@@ -34,9 +36,11 @@ JOIN Cidade c ON p.id = c.id_pessoa
 JOIN Feudo f ON c.id_feudo = f.id;
 
 -- Objetivo 6: Identificar o rei mais antigo ainda vivo.
+-- `pessoas_vivas` deve conter apenas quem não possui data de óbito.
 CREATE OR REPLACE VIEW pessoas_vivas AS
 SELECT nome, sobreNome, nascimento, óbito
-FROM Pessoa;
+FROM Pessoa
+WHERE óbito IS NULL;
 
 -- =====================================================================
 -- CAPÍTULO 2: PRIMEIRAS PISTAS DOS JUSTICEIROS [NÍVEL MÁXIMO: 2]
@@ -52,12 +56,15 @@ FROM Ataques;
 
 -- Objetivo 2, 3, 4: Agrupar e filtrar ataques por território/data.
 -- `autor` exposto para o jogador reconciliar ataques_raw × ataques_detalhe.
+-- `id_territorio` exposto para que a linha do ataque seja verificável contra
+-- regioes_reinos (id) — sem ele, o id cru de ataques_raw parece "órfão".
 CREATE OR REPLACE VIEW ataques_detalhe AS
 SELECT
     a.id,
     a.data_ocorrido,
     a.autor,
-    f.familiaFeudal AS territorio_atacado
+    f.familiaFeudal AS territorio_atacado,
+    a.id_territorio
 FROM Ataques a
 JOIN Feudo f ON a.id_territorio = f.id
 WHERE a.autor = 'Os Justiceiros'; 
@@ -120,9 +127,17 @@ FROM Ataques a
 JOIN Feudo f ON a.id_territorio = f.id; -- Assumindo que id_territorio é o local do ataque, e o recurso vem de lá.
 
 -- Objetivo 4: Aliados políticos e militares do Senhor da Torre.
+-- Nomes expostos para que o objetivo ("personagem com mais alianças")
+-- seja respondível sem consultar tabelas base que não existem no SQLite do jogo.
 CREATE OR REPLACE VIEW aliancas_raw AS
-SELECT id_personagem1, id_personagem2
-FROM Aliados_Politicos;
+SELECT
+    ap.id_personagem1,
+    ap.id_personagem2,
+    p1.nome AS nome_personagem1,
+    p2.nome AS nome_personagem2
+FROM Aliados_Politicos ap
+JOIN Pessoa p1 ON p1.id = ap.id_personagem1
+JOIN Pessoa p2 ON p2.id = ap.id_personagem2;
 
 -- =====================================================================
 -- CAPÍTULO 5: O HEXADECIMAL E O GRIMÓRIO [NÍVEL MÁXIMO: 4]

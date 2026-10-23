@@ -89,6 +89,9 @@ INSERT INTO Visao (id, id_capitulo, comando) VALUES
 ( 6, 2, 'magical_world.ataques_raw'),
 ( 7, 2, 'magical_world.ataques_detalhe'),
 ( 8, 2, 'magical_world.vinculos_suspeitos'),
+-- Capítulo 2 também expõe o mapa de territórios (com id) para que os jogadores
+-- possam resolver Ataques.id_territorio → nome do reino.
+(24, 2, 'magical_world.regioes_reinos'),
 -- Capítulo 3: rastreamento de recursos e conspirações
 ( 9, 3, 'magical_world.transacoes_base'),
 (10, 3, 'magical_world.posse_artefatos_base'),
@@ -194,39 +197,38 @@ INSERT INTO Dica (id, id_capitulo, ordem, conteudo, penalidade_xp) VALUES
 -- Capítulo 3
 INSERT INTO Dica (id, id_capitulo, ordem, conteudo, penalidade_xp) VALUES
 (7, 3, 1,
- 'Comece filtrando Transacoes_Comerciais pelo campo recurso: '
- 'SELECT * FROM Transacoes_Comerciais WHERE recurso = ''pedras flamejantes'';',
+ 'Comece filtrando a VIEW transacoes_base pelo campo recurso: '
+ 'SELECT * FROM transacoes_base WHERE recurso = ''pedras flamejantes'';',
  10),
 (8, 3, 2,
- 'Para rastrear quem autorizou as transações, use JOIN entre transacoes_base, '
- 'Feudo (origem e destino) e Pessoa (id_senhor_autorizador).',
+ 'Para rastrear quem autorizou as transações, use transacoes_base.id_senhor_autorizador '
+ 'e cruze com mineracao_base.id_pessoa — as duas views estão disponíveis neste capítulo. '
+ 'As tabelas base (Transacoes_Comerciais, Feudo, Pessoa) NÃO existem no banco do jogo.',
  25),
 (9, 3, 3,
- 'Para cruzar transações com ataques posteriores: '
- 'SELECT p.nome AS senhor_autorizador, tc.recurso, a.data_ocorrido AS data_ataque '
- 'FROM Transacoes_Comerciais tc '
- 'JOIN Pessoa p ON tc.id_senhor_autorizador = p.id '
- 'JOIN Ataques a ON tc.id_territorio_destino = a.id_territorio '
- 'WHERE a.data_ocorrido > tc.data_transacao;',
+ 'Para cruzar transações com ataques no território de destino: '
+ 'SELECT tb.recurso, tb.id_territorio_destino, rab.data_ocorrido AS data_ataque '
+ 'FROM transacoes_base tb '
+ 'JOIN recursos_ataques_base rab ON tb.id_territorio_destino = rab.id_territorio '
+ 'WHERE rab.data_ocorrido > tb.data_transacao;',
  50);
 
 -- Capítulo 4
 INSERT INTO Dica (id, id_capitulo, ordem, conteudo, penalidade_xp) VALUES
 (10, 4, 1,
  'A VIEW "ordens_torre_base" contém ordens da Torre Mágica. '
- 'Filtre por id_territorio_alvo para cruzar com ataques de alto impacto (nivel_impacto > 8).',
+ 'Cruze com recursos_ataques_base pelo território (id_territorio_alvo = id_territorio) '
+ 'e filtre ataques com quantidade_recursos acima da média (subquery com AVG).',
  10),
 (11, 4, 2,
- 'Para encontrar aliados do Senhor da Torre, junte Torres_Magicas, Aliados_Politicos e Pessoa. '
- 'Filtre WHERE tm.nome = ''Torre Mágica de Val Nareth''.',
+ 'A VIEW "aliancas_raw" já traz nome_personagem1 e nome_personagem2. '
+ 'Use GROUP BY nome_personagem1 e COUNT(*) para contar alianças por personagem.',
  25),
 (12, 4, 3,
- 'Query dos aliados: SELECT p1.nome AS senhor_da_torre, p2.nome AS aliado '
- 'FROM Pessoa p1 '
- 'JOIN Torres_Magicas tm ON p1.id = tm.id_senhor_da_torre '
- 'JOIN aliancas_raw al ON p1.id = al.id_personagem1 '
- 'JOIN Pessoa p2 ON al.id_personagem2 = p2.id '
- 'WHERE tm.nome = ''Torre Mágica de Val Nareth'';',
+ 'Query das alianças: SELECT nome_personagem1, COUNT(*) AS total_aliados '
+ 'FROM aliancas_raw '
+ 'GROUP BY nome_personagem1 '
+ 'ORDER BY total_aliados DESC;',
  50);
 
 -- Capítulo 5
@@ -439,15 +441,15 @@ INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) V
 -- Obj 20 (nivel 4): GROUP BY + subquery — personagem com mais alianças
 INSERT INTO Consulta (id, id_capitulo, id_objetivo, query, colunas, resultado) VALUES
 (20, 4, 20,
- 'SELECT id_personagem1, COUNT(id_personagem2) AS total_aliados '
+ 'SELECT nome_personagem1, COUNT(*) AS total_aliados '
  'FROM aliancas_raw '
- 'GROUP BY id_personagem1 '
- 'HAVING COUNT(id_personagem2) = ('
+ 'GROUP BY nome_personagem1 '
+ 'HAVING COUNT(*) = ('
  '  SELECT MAX(cnt) FROM ('
- '    SELECT COUNT(id_personagem2) AS cnt FROM aliancas_raw GROUP BY id_personagem1'
+ '    SELECT COUNT(*) AS cnt FROM aliancas_raw GROUP BY nome_personagem1'
  '  ) sub'
  ');',
- ARRAY['id_personagem1', 'total_aliados'],
+ ARRAY['nome_personagem1', 'total_aliados'],
  NULL);
 
 -- Obj 21 (nivel 4): JOIN 2 tabelas + GROUP BY — ataques e recursos por torre
